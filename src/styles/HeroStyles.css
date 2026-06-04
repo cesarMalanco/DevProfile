@@ -1,0 +1,175 @@
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0rem 8%;
+    background-color: var(--lm-white);
+    background-image:
+        linear-gradient(
+            rgba(120, 137, 155, 0.08) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(120, 137, 155, 0.08) 1px,
+            transparent 1px
+        );
+    background-size: 50px 50px;
+    gap: 2rem;
+}
+
+/* === IZQUIERDA === */
+
+.hero-left {
+    flex: 1;
+}
+
+.hero-tag {
+    display: inline-block;
+    padding: .6rem 1rem;
+    background: rgba(229, 179, 106, .15);
+    color: var(--lm-text);
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+.hero-title {
+    margin-top: 1.5rem;
+    font-size: 3rem;
+    line-height: 1.1;
+    color: var(--lm-text);
+}
+
+.highlight {
+    color: var(--lm-accent);
+}
+
+.hero-description {
+    margin-top: 1.5rem;
+    max-width: 550px;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--lm-blue);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    border: none;
+    background: var(--lm-accent);
+    color: var(--lm-text);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.btn-primary:hover  {
+    transform: translateY(-3px);
+}
+.btn-secondary:hover  {
+    transform: translateY(-3px);
+}
+
+.btn-secondary {
+    border: 2px solid var(--lm-blue);
+    background: transparent;
+    color: var(--lm-text);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+}
+
+.hero-stats h2 {
+    color: var(--lm-text);
+}
+
+.hero-stats span {
+    color: var(--lm-blue);
+}
+
+/* === DERECHA === */
+
+.hero-right {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 700px;
+}
+
+.cv-card {
+    position: absolute;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: .4s ease;
+}
+
+.cv-card:hover {
+    z-index: 10;
+}
+
+.cv-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cv-left {
+    width: 260px;
+    height: 370px;
+    left: 20px;
+    transform: rotate(-18deg);
+    z-index: 1;
+    transition: .3s;
+}
+
+.cv-center {
+    width: 320px;
+    height: 450px;
+    z-index: 3;
+    transform: translateY(-20px);
+    transition: .3s;
+}
+
+.cv-right {
+    width: 260px;
+    height: 370px;
+    right: 20px;
+    transform: rotate(18deg);
+    z-index: 1;
+    transition: .3s;
+}
+
+.cv-left:hover {
+    transform: rotate(-18deg) scale(1.05);
+}
+
+.cv-center:hover {
+    transform: translateY(-20px) scale(1.09);
+}
+
+.cv-right:hover {
+    transform: rotate(18deg) scale(1.05);
+}
+
+.cv-center {
+    width: 320px;
+    height: 450px;
+    z-index: 3;
+    transform: translateY(-20px);
+}
