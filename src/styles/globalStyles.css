@@ -1,0 +1,73 @@
+/* ===== BUTTONS =====*/
+.btn-primary {
+    border: none;
+    background: var(--lm-accent);
+    color: var(--lm-text);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.btn-primary:hover  {
+    transform: translateY(-3px);
+}
+.btn-secondary:hover  {
+    transform: translateY(-3px);
+}
+
+.btn-secondary {
+    border: 2px solid var(--lm-blue);
+    background: transparent;
+    color: var(--lm-text);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+
+.cta-btn-primary {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--lm-accent), var(--lm-accent-2));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cta-btn-secondary {
+    padding: 1rem 2rem;
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.cta-btn-secondary:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}

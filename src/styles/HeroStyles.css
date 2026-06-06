@@ -5,15 +5,8 @@
     padding: 0rem 8%;
     background-color: var(--lm-white);
     background-image:
-        linear-gradient(
-            rgba(120, 137, 155, 0.08) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(120, 137, 155, 0.08) 1px,
-            transparent 1px
-        );
+        linear-gradient(rgba(120, 137, 155, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 137, 155, 0.08) 1px, transparent 1px);
     background-size: 50px 50px;
     gap: 2rem;
 }
@@ -56,35 +49,6 @@
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
-}
-
-.btn-primary {
-    border: none;
-    background: var(--lm-accent);
-    color: var(--lm-text);
-    padding: 14px 28px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.btn-primary:hover  {
-    transform: translateY(-3px);
-}
-.btn-secondary:hover  {
-    transform: translateY(-3px);
-}
-
-.btn-secondary {
-    border: 2px solid var(--lm-blue);
-    background: transparent;
-    color: var(--lm-text);
-    padding: 14px 28px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .3s;
 }
 
 .hero-stats {

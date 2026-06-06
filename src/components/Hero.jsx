@@ -3,6 +3,7 @@ import cv2 from "../assets/cv1.png";
 import cv3 from "../assets/cv3.png";
 import "../../src/index.css";
 import "../styles/HeroStyles.css";
+import "../styles/globalStyles.css";
 
 function Hero() {
     return (
