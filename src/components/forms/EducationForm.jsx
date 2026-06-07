@@ -76,7 +76,7 @@ function EducationForm() {
   };
 
   return (
-    <div>
+    <div className="form-card">
       <h2>Educación / Certificaciones</h2>
 
       <input
@@ -114,28 +114,36 @@ function EducationForm() {
         onChange={handleChange}
       />
 
-      <p style={{ color: "red" }}>{error}</p>
+      <p className="error-message">
+        {error}
+      </p>
 
       {/* BOTONES */}
       {editIndex === null ? (
-        <button onClick={addEducation}>Agregar</button>
+        <button type="button" className="btn-primary" onClick={addEducation}>
+          Agregar
+        </button>
       ) : (
-        <button onClick={updateEducation}>Actualizar</button>
+        <button type="button" className="btn-edit" onClick={updateEducation}>
+          Actualizar
+        </button>
       )}
 
-      <button onClick={clearForm}>Limpiar</button>
+      <button type="button" className="btn-clear" onClick={clearForm}>
+        Limpiar
+      </button>
 
       {/* LISTA */}
-      <ul>
+      <ul className="item-list">
         {education.map((item, index) => (
           <li key={index}>
             <strong>{item.institution}</strong> - {item.program}
 
-            <button onClick={() => startEdit(item, index)}>
+            <button type="button" className="btn-edit" onClick={() => startEdit(item, index)}>
               Editar
             </button>
 
-            <button onClick={() => deleteEducation(index)}>
+            <button type="button" className="btn-delete" onClick={() => deleteEducation(index)}>
               Eliminar
             </button>
           </li>

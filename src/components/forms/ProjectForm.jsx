@@ -96,7 +96,7 @@ function ProjectForm() {
   };
 
   return (
-    <div>
+    <div className="form-card">
       <h2>Proyectos</h2>
 
       <input
@@ -145,26 +145,32 @@ function ProjectForm() {
 
       {/* BOTONES */}
       {editIndex === null ? (
-        <button onClick={addProject}>Agregar</button>
+        <button type="button" className="btn-primary" onClick={addProject}>
+          Agregar
+        </button>
       ) : (
-        <button onClick={updateProject}>Actualizar</button>
+        <button type="button" className="btn-edit" onClick={updateProject}>
+          Actualizar
+        </button>
       )}
 
-      <button onClick={clearForm}>Limpiar</button>
+      <button type="button" className="btn-clear" onClick={clearForm}>
+        Limpiar
+      </button>
 
       {/* LISTA */}
-      <ul>
+      <ul className="item-list">
         {projects.map((project, index) => (
           <li key={index}>
             <strong>{project.name}</strong>
 
             <p>{project.tech}</p>
 
-            <button onClick={() => startEdit(project, index)}>
+            <button type="button" className="btn-edit" onClick={() => startEdit(project, index)}>
               Editar
             </button>
 
-            <button onClick={() => deleteProject(index)}>
+            <button type="button" className="btn-delete" onClick={() => deleteProject(index)}>
               Eliminar
             </button>
           </li>

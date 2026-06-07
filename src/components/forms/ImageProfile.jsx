@@ -8,7 +8,7 @@ function ImageProfile() {
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(profileImage);
 
-  // 📂 Imagen desde archivo local
+  // Archivo local
   const handleFileChange = (e) => {
     const file = e.target.files[0];
 
@@ -30,7 +30,7 @@ function ImageProfile() {
     }
   };
 
-  // 🌐 Imagen por URL
+  // Imagen por URL
   const handleURLChange = (e) => {
     const url = e.target.value;
 
@@ -45,7 +45,7 @@ function ImageProfile() {
     setError("");
   };
 
-  // 🧹 Limpiar imagen
+  // Limpiar imagen
   const clearImage = () => {
     setProfileImage("");
     setPreview("");
@@ -53,15 +53,15 @@ function ImageProfile() {
   };
 
   return (
-    <div>
+    <div className="form-card">
       <h2>Imagen de Perfil</h2>
 
-      {/* 📂 Archivo local */}
+      {/* Archivo local */}
       <input type="file" accept="image/*" onChange={handleFileChange} />
 
       <br />
 
-      {/* 🌐 URL */}
+      {/* URL */}
       <input
         type="text"
         placeholder="URL de imagen"
@@ -70,7 +70,7 @@ function ImageProfile() {
 
       <p style={{ color: "red" }}>{error}</p>
 
-      {/* 🖼️ Preview */}
+      {/* Preview */}
       {preview && (
         <div>
           <img
@@ -82,7 +82,9 @@ function ImageProfile() {
         </div>
       )}
 
-      <button onClick={clearImage}>Eliminar imagen</button>
+      <button type="button" className="btn-clear" onClick={clearImage}>
+        Eliminar imagen
+      </button>
     </div>
   );
 }

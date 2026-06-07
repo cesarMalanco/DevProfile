@@ -107,7 +107,7 @@ function SkillForm() {
   };
 
   return (
-    <div>
+    <div className="form-card">
       <h2>Habilidades</h2>
 
       <input
@@ -137,30 +137,61 @@ function SkillForm() {
         onChange={handleChange}
       />
 
-      <p style={{ color: "red" }}>
+      <p className="error-message">
         {errors.skill}
       </p>
 
-      {/* BOTONES */}
-      {editIndex === null ? (
-        <button onClick={addSkill}>Agregar</button>
-      ) : (
-        <button onClick={updateSkill}>Actualizar</button>
-      )}
+      {/* botones */}
+      <div className="form-buttons">
 
-      <button onClick={clearForm}>Limpiar</button>
+        {editIndex === null ? (
+          <button
+            type="button"
+            className="btn-save"
+            onClick={addSkill}
+          >
+            Agregar
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn-save"
+            onClick={updateSkill}
+          >
+            Actualizar
+          </button>
+        )}
 
-      {/* LISTA */}
-      <ul>
+        <button
+          type="button"
+          className="btn-clear"
+          onClick={clearForm}
+        >
+          Limpiar
+        </button>
+
+      </div>
+        
+
+      {/* lista de habilidades */}
+      <ul className="item-list">
         {skills.map((skill, index) => (
           <li key={index}>
             <strong>{skill.name}</strong> - {skill.level}
 
-            <button onClick={() => startEdit(skill, index)}>
+            <button
+              type="button"
+              className="btn-edit"
+              onClick={() => startEdit(skill, index)}
+            >
               Editar
             </button>
 
-            <button onClick={() => deleteSkill(index)}>
+            <button
+              type="button"
+              className="btn-delete"
+              onClick={() => deleteSkill(index)}
+            >
               Eliminar
             </button>
           </li>

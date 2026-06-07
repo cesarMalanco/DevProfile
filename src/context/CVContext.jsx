@@ -5,10 +5,12 @@ export const CVContext = createContext();
 
 export const CVProvider = ({ children }) => {
 
+  const user = localStorage.getItem("loggedUser") || "guest";
+
   // datos personales
   const [personalInfo, setPersonalInfo] =
     useLocalStorage(
-      "personalInfo",
+      `${user}_personalInfo`,
       {
         fullName: "",
         profession: "",
@@ -25,35 +27,35 @@ export const CVProvider = ({ children }) => {
   // imagen de perfil
   const [profileImage, setProfileImage] =
     useLocalStorage(
-      "profileImage",
+      `${user}_profileImage`,
       ""
     );
 
   // habilidades
   const [skills, setSkills] =
     useLocalStorage(
-      "skills",
+      `${user}_skills`,
       []
     );
 
   // proyectos
   const [projects, setProjects] =
     useLocalStorage(
-      "projects",
+      `${user}_projects`,
       []
     );
 
   // educación
   const [education, setEducation] =
     useLocalStorage(
-      "education",
+      `${user}_education`,
       []
     );
 
   // idiomas
   const [languages, setLanguages] =
     useLocalStorage(
-      "languages",
+      `${user}_languages`,
       []
     );
 

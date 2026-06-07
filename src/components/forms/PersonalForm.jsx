@@ -39,7 +39,8 @@ function PersonalForm() {
     }
 
     // Email
-    if (!validateEmail(personalInfo.email)) {
+    if (personalInfo.email && !validateEmail(personalInfo.email)
+    ) {
       newErrors.email = "Correo inválido";
     }
 
@@ -120,7 +121,7 @@ function PersonalForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form-card" onSubmit={handleSubmit}>
       <h2>Datos Personales</h2>
 
       <input
@@ -130,7 +131,9 @@ function PersonalForm() {
         value={personalInfo.fullName}
         onChange={handleChange}
       />
-      <p>{errors.fullName}</p>
+      <p className="error-message">
+        {errors.fullName}
+      </p>
 
       <input
         type="text"
@@ -139,7 +142,9 @@ function PersonalForm() {
         value={personalInfo.profession}
         onChange={handleChange}
       />
-      <p>{errors.profession}</p>
+      <p className="error-message">
+        {errors.profession}
+      </p>
 
       <input
         type="text"
@@ -148,7 +153,9 @@ function PersonalForm() {
         value={personalInfo.city}
         onChange={handleChange}
       />
-      <p>{errors.city}</p>
+      <p className="error-message">
+        {errors.city}
+      </p>
 
       <input
         type="email"
@@ -157,7 +164,9 @@ function PersonalForm() {
         value={personalInfo.email}
         onChange={handleChange}
       />
-      <p>{errors.email}</p>
+      <p className="error-message">
+        {errors.email}
+      </p>
 
       <input
         type="text"
@@ -166,6 +175,9 @@ function PersonalForm() {
         value={personalInfo.phone}
         onChange={handleChange}
       />
+      <p className="error-message">
+        {errors.phone}
+      </p>
 
       <textarea
         name="description"
@@ -173,7 +185,9 @@ function PersonalForm() {
         value={personalInfo.description}
         onChange={handleChange}
       />
-      <p>{errors.description}</p>
+      <p className="error-message">
+        {errors.description}
+      </p>
 
       <input
         type="text"
@@ -182,7 +196,9 @@ function PersonalForm() {
         value={personalInfo.github}
         onChange={handleChange}
       />
-      <p>{errors.github}</p>
+      <p className="error-message">
+        {errors.github}
+      </p>
 
       <input
         type="text"
@@ -191,7 +207,9 @@ function PersonalForm() {
         value={personalInfo.linkedin}
         onChange={handleChange}
       />
-      <p>{errors.linkedin}</p>
+      <p className="error-message">
+        {errors.linkedin}
+      </p>
 
       <input
         type="text"
@@ -200,18 +218,26 @@ function PersonalForm() {
         value={personalInfo.portfolio}
         onChange={handleChange}
       />
-      <p>{errors.portfolio}</p>
+      <p className="error-message">
+        {errors.portfolio}
+      </p>
 
-      <button type="submit">
-        Guardar
-      </button>
+      <div className="form-buttons">
+        <button
+          type="submit"
+          className="btn-save"
+        >
+          Guardar
+        </button>
 
-      <button
-        type="button"
-        onClick={clearForm}
-      >
-        Eliminar Datos
-      </button>
+        <button
+          type="button"
+          className="btn-clear"
+          onClick={clearForm}
+        >
+          Eliminar Datos
+        </button>
+      </div>
     </form>
   );
 }

@@ -91,7 +91,7 @@ function LanguageForm() {
   };
 
   return (
-    <div>
+    <div className="form-card">
       <h2>Idiomas</h2>
 
       <input
@@ -115,25 +115,28 @@ function LanguageForm() {
       <p style={{ color: "red" }}>{error}</p>
 
       {editIndex === null ? (
-        <button onClick={addLanguage}>
+        <button type="button" className="btn-primary" onClick={addLanguage}>
           Agregar
         </button>
       ) : (
-        <button onClick={updateLanguage}>
+        <button type="button" className="btn-edit" onClick={updateLanguage}>
           Actualizar
         </button>
       )}
 
-      <button onClick={clearForm}>
+      <button type="button" className="btn-clear" onClick={clearForm}>
         Limpiar
       </button>
 
-      <ul>
+      <ul className="item-list">
         {languages.map((lang, index) => (
           <li key={index}>
             <strong>{lang.language}</strong> - {lang.level}
 
             <button
+              type="button"
+              className="btn-edit"
+
               onClick={() =>
                 startEdit(lang, index)
               }
@@ -142,6 +145,8 @@ function LanguageForm() {
             </button>
 
             <button
+              type="button"
+              className="btn-delete"
               onClick={() =>
                 deleteLanguage(index)
               }

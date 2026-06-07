@@ -1,0 +1,19 @@
+.editor-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.editor-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--lm-text);
+
+    margin-bottom: 3rem;
+}
+
+.forms-grid {
+    display: grid;
+    gap: 2rem;
+}
