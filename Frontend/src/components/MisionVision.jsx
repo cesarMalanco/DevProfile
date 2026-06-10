@@ -18,7 +18,7 @@ function MissionVision() {
 
                 <div className="purpose-card mission-card">
 
-                    <div class="purpose-header">
+                    <div className="purpose-header">
                         <div className="purpose-icon">
                         <i className="fa-solid fa-bullseye"></i>
                     </div>
@@ -34,7 +34,7 @@ function MissionVision() {
                 </div>
 
                 <div className="purpose-center">
-                    <div class="purpose-header">
+                    <div className="purpose-header">
                         
                     </div>
                     <div className="center-circle">
@@ -44,7 +44,7 @@ function MissionVision() {
                 </div>
 
                 <div className="purpose-card vision-card">
-                    <div class="purpose-header">
+                    <div className="purpose-header">
                         <div className="purpose-icon">
                             <i className="fa-solid fa-eye"></i>
                         </div>

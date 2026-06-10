@@ -6,17 +6,28 @@ import Preview from "../pages/Preview";
 import Dashboard from "../pages/Dashboard";
 import About from "../pages/About";
 import Login from "../pages/Login";
+import ProtectedRoute from "../routes/ProtectedRoute";
 
 function AppRouter() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/cvs" element={<CVs />} />
-            <Route path="/editor" element={<Editor />} />
-            <Route path="/preview" element={<Preview />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/cvs" element={<CVs />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route path="/editor" element={
+                    <ProtectedRoute>
+                        <Editor />
+                    </ProtectedRoute>
+                }
+            />
         </Routes>
     );
 }

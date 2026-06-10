@@ -2,15 +2,15 @@ import Navbar from "./components/Navbar";
 import AppRouter from "./routes/AppRouter";
 import Footer from "./components/Footer";
 
-import { CVProvider } from "./context/CVContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <CVProvider>
+    <>
       <Navbar />
       <AppRouter />
       <Footer />
-    </CVProvider>
+    </>
   );
 }
 

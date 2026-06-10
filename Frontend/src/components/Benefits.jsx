@@ -36,7 +36,7 @@ function Benefits() {
                 <div className="benefit top-right">
                     <div className="benefit-top">
                         <i className="fa-solid fa-mobile-screen"></i>
-                        <h3>Mobile Responsive</h3>
+                        <h3>Available at any time</h3>
                     </div>
                     <p>Edit from any device.</p>
                 </div>
