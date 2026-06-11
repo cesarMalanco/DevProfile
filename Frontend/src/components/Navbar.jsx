@@ -3,10 +3,12 @@ import "../styles/NavbarStyles.css";
 import "../../src/index.css";
 import logo from "../assets/devProfile_logo.png";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 function Navbar() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const { darkMode, toggleTheme } = useTheme();
 
     return (
         <>
@@ -24,6 +26,12 @@ function Navbar() {
                 </div>
 
                 <div className="top-right user-section">
+                    <button
+                        className="theme-btn"
+                        onClick={toggleTheme}
+                    >
+                        {darkMode ? "☀️ Light" : "🌙 Dark"}
+                    </button>
                     {user ? (
                         <>
                             <span className="user-badge">

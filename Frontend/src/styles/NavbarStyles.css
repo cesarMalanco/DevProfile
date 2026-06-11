@@ -191,3 +191,10 @@
 .logout-btn:hover {
     background-color: var(--lm-accent-2);
 }
+
+.theme-btn {
+    border: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+}
