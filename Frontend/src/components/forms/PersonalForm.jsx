@@ -1,244 +1,231 @@
-import { useContext } from "react";
-import useFormValidation from "../../hooks/useFormValidation";
-import { CVContext } from "../../context/CVContext";
-import { validateEmail, validateURL, validateLength } from "../../utils/validations";
+import "../../styles/EditorStyles.css";
+import "../../styles/globalStyles.css";
 
-
-function PersonalForm() {
-  const { personalInfo, setPersonalInfo } = useContext(CVContext);
-
-  const {
-    errors,
-    setErrors,
-    clearErrors
-  } = useFormValidation();
-
+function PersonalForm({ formData, setFormData, foto, setFoto, errors }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData({...formData, [name]: value});
 
-    setPersonalInfo({
-      ...personalInfo,
-      [name]: value
-    });
   };
-
-  const validateForm = () => {
-    let newErrors = {};
-
-    // Campos obligatorios
-    if (!personalInfo.fullName.trim()) {
-      newErrors.fullName = "Nombre obligatorio";
-    }
-
-    if (!personalInfo.profession.trim()) {
-      newErrors.profession = "Profesión obligatoria";
-    }
-
-    if (!personalInfo.city.trim()) {
-      newErrors.city = "Ciudad obligatoria";
-    }
-
-    // Email
-    if (personalInfo.email && !validateEmail(personalInfo.email)
-    ) {
-      newErrors.email = "Correo inválido";
-    }
-
-    // Longitudes
-    if (
-      personalInfo.fullName &&
-      !validateLength(personalInfo.fullName, 3, 50)
-    ) {
-      newErrors.fullName =
-        "El nombre debe tener entre 3 y 50 caracteres";
-    }
-
-    if (
-      personalInfo.profession &&
-      !validateLength(personalInfo.profession, 3, 50)
-    ) {
-      newErrors.profession =
-        "La profesión debe tener entre 3 y 50 caracteres";
-    }
-
-    if (
-      personalInfo.description &&
-      !validateLength(personalInfo.description, 10, 300)
-    ) {
-      newErrors.description =
-        "La descripción debe tener entre 10 y 300 caracteres";
-    }
-
-    // URLs
-    if (
-      personalInfo.github &&
-      !validateURL(personalInfo.github)
-    ) {
-      newErrors.github = "URL inválida";
-    }
-
-    if (
-      personalInfo.linkedin &&
-      !validateURL(personalInfo.linkedin)
-    ) {
-      newErrors.linkedin = "URL inválida";
-    }
-
-    if (
-      personalInfo.portfolio &&
-      !validateURL(personalInfo.portfolio)
-    ) {
-      newErrors.portfolio = "URL inválida";
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      alert("Datos guardados correctamente");
-    }
-  };
-
-  const clearForm = () => {
-    setPersonalInfo({
-      fullName: "",
-      profession: "",
-      city: "",
-      email: "",
-      phone: "",
-      description: "",
-      github: "",
-      linkedin: "",
-      portfolio: ""
-    });
-
-    clearErrors();
-  };
-
   return (
-    <form className="form-card" onSubmit={handleSubmit}>
-      <h2>Datos Personales</h2>
-
-      <input
-        type="text"
-        name="fullName"
-        placeholder="Nombre completo"
-        value={personalInfo.fullName}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.fullName}
-      </p>
-
-      <input
-        type="text"
-        name="profession"
-        placeholder="Profesión"
-        value={personalInfo.profession}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.profession}
-      </p>
-
-      <input
-        type="text"
-        name="city"
-        placeholder="Ciudad"
-        value={personalInfo.city}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.city}
-      </p>
-
-      <input
-        type="email"
-        name="email"
-        placeholder="Correo"
-        value={personalInfo.email}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.email}
-      </p>
-
-      <input
-        type="text"
-        name="phone"
-        placeholder="Teléfono"
-        value={personalInfo.phone}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.phone}
-      </p>
-
-      <textarea
-        name="description"
-        placeholder="Perfil profesional"
-        value={personalInfo.description}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.description}
-      </p>
-
-      <input
-        type="text"
-        name="github"
-        placeholder="GitHub"
-        value={personalInfo.github}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.github}
-      </p>
-
-      <input
-        type="text"
-        name="linkedin"
-        placeholder="LinkedIn"
-        value={personalInfo.linkedin}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.linkedin}
-      </p>
-
-      <input
-        type="text"
-        name="portfolio"
-        placeholder="Portafolio"
-        value={personalInfo.portfolio}
-        onChange={handleChange}
-      />
-      <p className="error-message">
-        {errors.portfolio}
-      </p>
-
-      <div className="form-buttons">
-        <button
-          type="submit"
-          className="btn-save"
-        >
-          Guardar
-        </button>
-
-        <button
-          type="button"
-          className="btn-clear"
-          onClick={clearForm}
-        >
-          Eliminar Datos
-        </button>
+    <section>
+      <div className="form-header">
+        <div className="section-title">
+          <h2>Personal</h2>
+          <h2 className="highlight-title">Information</h2>
+        </div>
+        <p>Fill out the details below to create your professional CV</p>
       </div>
-    </form>
+
+      <div className="photo-section">
+        <div className="profile-preview">
+          <div className="avatar-placeholder">
+            <i className="fa-solid fa-user-astronaut"></i>
+          </div>
+          <button type="button" className="btn-edit-photo">
+            <i className="fa-solid fa-camera"></i>
+          </button>
+        </div>
+        <div className="photo-info">
+          <h4>Profile Photo</h4>
+          <p>Upload a professional photo</p>
+
+          <div className="photo-actions">
+
+            <input
+              id="foto_perfil"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFoto(e.target.files[0])}
+              style={{ display: "none" }}
+            />
+
+            <label htmlFor="foto_perfil" className="btn-upload">
+              <i className="fa-solid fa-cloud-upload-alt"></i>
+              Choose file
+            </label>
+
+            <span className="file-hint">{foto ? foto.name : "JPG, PNG • Max 5MB"}</span>
+
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <div className="form-grid">
+          <div className="input-group">
+            <label>
+              <i className="fa-solid fa-user"></i>
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="nombre_completo"
+              value={formData.nombre_completo}
+              onChange={handleChange}
+              placeholder="John Doe"
+            />
+            {errors?.nombre_completo && (
+              <span className="error-message">
+                {errors.nombre_completo}
+              </span>
+            )}
+          </div>
+
+          <div className="input-group">
+            <label>
+              <i className="fa-solid fa-briefcase"></i>
+              Profession
+            </label>
+            <input
+              type="text"
+              name="profesion"
+              placeholder="Frontend Developer"
+              value={formData.profesion}
+              onChange={handleChange}
+            />
+            {errors?.profesion && (
+              <span className="error-message">
+                {errors.profesion}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <div className="form-grid">
+          <div className="input-group">
+            <label>
+              <i className="fa-solid fa-phone"></i>
+              Phone
+            </label>
+            <input
+              type="tel"
+              name="telefono"
+              placeholder="+1 555 555 555"
+              value={formData.telefono}
+              onChange={handleChange}
+            />
+            {errors?.telefono && (
+              <span className="error-message">
+                {errors.telefono}
+              </span>
+            )}
+          </div>
+
+          <div className="input-group">
+            <label>
+              <i className="fa-solid fa-envelope"></i>
+              Email
+            </label>
+            <input
+              type="email"
+              name="correo"
+              placeholder="john@email.com"
+              value={formData.correo}
+              onChange={handleChange}
+            />
+            {errors?.correo && (
+              <span className="error-message">
+                {errors.correo}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="input-group">
+          <label>
+            <i className="fa-solid fa-location-dot"></i>
+            City
+          </label>
+          <input
+            type="text"
+            name="ciudad"
+            placeholder="New York"
+            value={formData.ciudad}
+            onChange={handleChange}
+          />
+          {errors?.ciudad && (
+            <span className="error-message">
+              {errors.ciudad}
+            </span>
+          )}
+        </div>
+
+        <div className="input-group">
+          <label>
+            <i className="fa-solid fa-align-left"></i>
+            Description
+          </label>
+          <textarea
+            name="descripcion"
+            placeholder="Tell recruiters about your experience, skills, and career goals..."
+            rows="5"
+            value={formData.descripcion}
+            onChange={handleChange}
+          ></textarea>
+          {errors?.descripcion && (
+            <span className="error-message">
+              {errors.descripcion}
+            </span>
+          )}
+          <span className="input-hint">Minimum 50 characters recommended</span>
+        </div>
+        <div className="form-grid">
+          <div className="input-group">
+            <label>
+              <i className="fa-brands fa-github"></i>
+              GitHub
+            </label>
+            <input
+              type="url"
+              name="github"
+              placeholder="https://github.com/username"
+              value={formData.github}
+              onChange={handleChange}
+            />
+            {errors?.github && (
+              <span className="error-message">
+                {errors.github}
+              </span>
+            )}
+          </div>
+
+          <div className="input-group">
+            <label>
+              <i className="fa-brands fa-linkedin"></i>
+              LinkedIn
+            </label>
+            <input
+              type="url"
+              name="linkedin"
+              placeholder="https://linkedin.com/in/username"
+              value={formData.linkedin}
+              onChange={handleChange}
+            />
+            {errors?.linkedin && (
+              <span className="error-message">
+                {errors.linkedin}
+              </span>
+            )}
+          </div>
+
+          <div className="input-group full-width">
+            <label>
+              <i className="fa-solid fa-globe"></i>
+              Portfolio
+            </label>
+            <input
+              type="url"
+              name="portafolio"
+              placeholder="https://yourportfolio.com"
+              value={formData.portafolio}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
+
+    </section>
   );
 }
 

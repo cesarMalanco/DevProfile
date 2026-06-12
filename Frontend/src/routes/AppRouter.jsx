@@ -28,6 +28,12 @@ function AppRouter() {
                     </ProtectedRoute>
                 }
             />
+
+            <Route path="/preview" element={
+                <ProtectedRoute>
+                    <Preview />
+                </ProtectedRoute>
+            } />
         </Routes>
     );
 }

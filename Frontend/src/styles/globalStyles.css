@@ -72,37 +72,3 @@
     transform: translateY(-2px);
 }
 
-.editor-locked {
-    min-height: 70vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 2rem;
-}
-
-.editor-locked-card {
-    background: white;
-
-    max-width: 550px;
-
-    padding: 2.5rem;
-
-    border-radius: 20px;
-
-    text-align: center;
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.1);
-}
-
-.editor-locked-card h1 {
-    margin-bottom: 1rem;
-    color: var(--lm-text);
-}
-
-.editor-locked-card p {
-    margin-bottom: 1rem;
-    line-height: 1.7;
-}

@@ -1,162 +1,92 @@
-import { useContext, useState } from "react";
-import { CVContext } from "../../context/CVContext";
-import { validateSkillLevel } from "../../utils/validations";
+import "../../styles/EditorStyles.css";
+import "../../styles/globalStyles.css";
 
-function LanguageForm() {
-  const { languages, setLanguages } = useContext(CVContext);
-
-  const [form, setForm] = useState({
-    language: "",
-    level: "Básico"
-  });
-
-  const [editIndex, setEditIndex] = useState(null);
-  const [error, setError] = useState("");
+function LanguageForm({ languageData, setLanguageData }) {
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target;
+    setLanguageData({
+      ...languageData,
+      [name]: value
     });
-  };
-
-  // VALIDACIONES
-  const validateForm = () => {
-    if (!form.language || !form.level) {
-      setError("Todos los campos son obligatorios");
-      return false;
-    }
-
-    if (!validateSkillLevel(form.level)) {
-      setError("Nivel inválido");
-      return false;
-    }
-
-    const exists = languages.some(
-      (lang, index) =>
-        lang.language.toLowerCase() ===
-          form.language.toLowerCase() &&
-        index !== editIndex
-    );
-
-    if (exists) {
-      setError("Este idioma ya existe");
-      return false;
-    }
-
-    setError("");
-    return true;
-  };
-
-  // CREAR
-  const addLanguage = () => {
-    if (!validateForm()) return;
-
-    setLanguages([...languages, form]);
-    clearForm();
-  };
-
-  // EDITAR
-  const updateLanguage = () => {
-    if (!validateForm()) return;
-
-    const updated = [...languages];
-    updated[editIndex] = form;
-
-    setLanguages(updated);
-    clearForm();
-  };
-
-  // ELIMINAR
-  const deleteLanguage = (index) => {
-    const updated = languages.filter((_, i) => i !== index);
-    setLanguages(updated);
-  };
-
-  // LIMPIAR
-  const clearForm = () => {
-    setForm({
-      language: "",
-      level: "Básico"
-    });
-
-    setEditIndex(null);
-    setError("");
-  };
-
-  // CARGAR PARA EDICIÓN
-  const startEdit = (language, index) => {
-    setForm(language);
-    setEditIndex(index);
   };
 
   return (
-    <div className="form-card">
-      <h2>Idiomas</h2>
+    <section>
+      <div className="form-section">
 
-      <input
-        type="text"
-        name="language"
-        placeholder="Idioma"
-        value={form.language}
-        onChange={handleChange}
-      />
+        <div className="section-header-forms">
+          <div className="section-icon">
+            <i className="fa-solid fa-language"></i>
+          </div>
 
-      <select
-        name="level"
-        value={form.level}
-        onChange={handleChange}
-      >
-        <option>Básico</option>
-        <option>Intermedio</option>
-        <option>Avanzado</option>
-      </select>
+          <div>
+            <h3>Language Information</h3>
+            <p>Add the languages you speak and your proficiency level</p>
+          </div>
+        </div>
 
-      <p style={{ color: "red" }}>{error}</p>
+        <div className="input-group">
+          <label>
+            <i className="fa-solid fa-earth-americas"></i>
+            Language
+          </label>
+          <input
+            type="text"
+            name="idioma"
+            value={languageData.idioma}
+            onChange={handleChange}
+            placeholder="English"
+          />
+        </div>
 
-      {editIndex === null ? (
-        <button type="button" className="btn-primary" onClick={addLanguage}>
-          Agregar
-        </button>
-      ) : (
-        <button type="button" className="btn-edit" onClick={updateLanguage}>
-          Actualizar
-        </button>
-      )}
+        <div className="input-group">
+          <label>
+            <i className="fa-solid fa-chart-line"></i>
+            Proficiency Level
+          </label>
 
-      <button type="button" className="btn-clear" onClick={clearForm}>
-        Limpiar
-      </button>
+          <select
+            name="nivel"
+            value={languageData.nivel}
+            onChange={handleChange}
+          >
+            <option value="Basico">Basic</option>
+            <option value="Intermedio">Intermediate</option>
+            <option value="Avanzado">Advanced</option>
+            <option value="Nativo">Native</option>
+          </select>
+        </div>
 
-      <ul className="item-list">
-        {languages.map((lang, index) => (
-          <li key={index}>
-            <strong>{lang.language}</strong> - {lang.level}
+        <div className="input-group">
+          <label>
+            <i className="fa-solid fa-certificate"></i>
+            Description / Certification
+          </label>
 
-            <button
-              type="button"
-              className="btn-edit"
+          <textarea
+            name="descripcion"
+            rows="4"
+            value={languageData.descripcion}
+            onChange={handleChange}
+            placeholder="Example: TOEFL iBT Score 95..."
+          />
+        </div>
 
-              onClick={() =>
-                startEdit(lang, index)
-              }
-            >
-              Editar
-            </button>
+        <div className="skill-actions">
+          <button type="button" className="btn-upload">
+            <i className="fa-solid fa-plus"></i>
+            Add Language
+          </button>
 
-            <button
-              type="button"
-              className="btn-delete"
-              onClick={() =>
-                deleteLanguage(index)
-              }
-            >
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+          <button type="button" className="btn-upload">
+            <i className="fa-solid fa-eraser"></i>
+            Clear
+          </button>
+        </div>
+
+      </div>
+    </section>
   );
 }
 

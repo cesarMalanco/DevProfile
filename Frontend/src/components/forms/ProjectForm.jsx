@@ -1,182 +1,145 @@
-import { useContext, useState } from "react";
-import { CVContext } from "../../context/CVContext";
-import { validateURL } from "../../utils/validations";
+import "../../styles/EditorStyles.css";
+import "../../styles/globalStyles.css";
 
-function ProjectForm() {
-  const { projects, setProjects } = useContext(CVContext);
-
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    tech: "",
-    repo: "",
-    deploy: "",
-    image: ""
-  });
-
-  const [editIndex, setEditIndex] = useState(null);
-  const [error, setError] = useState("");
-
+function ProjectForm({ projectData, setProjectData }) {
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  // validación
-  const validateForm = () => {
-    if (!form.name || !form.description || !form.tech) {
-      setError("Nombre, descripción y tecnologías son obligatorios");
-      return false;
-    }
-
-    if (!validateURL(form.repo) || !validateURL(form.deploy)) {
-      setError("URLs inválidas");
-      return false;
-    }
-
-    // duplicados
-    const exists = projects.some(
-      (p, index) =>
-        p.name.toLowerCase().trim() === form.name.toLowerCase().trim() &&
-        index !== editIndex
-    );
-
-    if (exists) {
-      setError("Este proyecto ya existe");
-      return false;
-    }
-
-    setError("");
-    return true;
-  };
-
-  // crear
-  const addProject = () => {
-    if (!validateForm()) return;
-
-    setProjects([...projects, form]);
-    clearForm();
-  };
-
-  // editar
-  const updateProject = () => {
-    if (!validateForm()) return;
-
-    const updated = [...projects];
-    updated[editIndex] = form;
-
-    setProjects(updated);
-    clearForm();
-  };
-
-  // eliminar
-  const deleteProject = (index) => {
-    setProjects(projects.filter((_, i) => i !== index));
-  };
-
-  // limpiar
-  const clearForm = () => {
-    setForm({
-      name: "",
-      description: "",
-      tech: "",
-      repo: "",
-      deploy: "",
-      image: ""
-    });
-    setEditIndex(null);
-  };
-
-  // editar
-  const startEdit = (project, index) => {
-    setForm(project);
-    setEditIndex(index);
+    const { name, value } = e.target;
+    setProjectData({...projectData,[name]: value});
   };
 
   return (
-    <div className="form-card">
-      <h2>Proyectos</h2>
+    <section>
+        <div className="form-section">
+          <div className="section-header-forms">
+            <div className="section-icon">
+              <i className="fa-solid fa-folder-open"></i>
+            </div>
+            <div>
+              <h3>Project Information</h3>
+              <p>Add your most relevant work</p>
+            </div>
+          </div>
 
-      <input
-        name="name"
-        placeholder="Nombre del proyecto"
-        value={form.name}
-        onChange={handleChange}
-      />
+          <div className="form-grid">
+            <div className="input-group">
+              <label>
+                <i className="fa-solid fa-diagram-project"></i>
+                Project Name
+              </label>
+              <input
+                type="text"
+                name="nombre"
+                value={projectData.nombre}
+                onChange={handleChange}
+                placeholder="Task Manager App"
+              />
+            </div>
 
-      <textarea
-        name="description"
-        placeholder="Descripción"
-        value={form.description}
-        onChange={handleChange}
-      />
+            <div className="input-group">
+              <label>
+                <i className="fa-solid fa-code"></i>
+                Technologies
+              </label>
+              <input
+                type="text"
+                name="tecnologias"
+                value={projectData.tecnologias}
+                onChange={handleChange}
+                placeholder="React, Node.js, MySQL"
+              />
+            </div>
+          </div>
 
-      <input
-        name="tech"
-        placeholder="Tecnologías (React, Node, etc)"
-        value={form.tech}
-        onChange={handleChange}
-      />
+          <div className="input-group">
+            <label>
+              <i className="fa-solid fa-align-left"></i>
+              Description
+            </label>
+            <textarea
+              rows="5"
+              name="descripcion"
+              value={projectData.descripcion}
+              onChange={handleChange}
+              placeholder="Describe your project, goals and achievements..."
+            ></textarea>
+          </div>
 
-      <input
-        name="repo"
-        placeholder="Repositorio URL"
-        value={form.repo}
-        onChange={handleChange}
-      />
+          <div className="form-grid">
+            <div className="input-group">
+              <label>
+                <i className="fa-brands fa-github"></i>
+                Repository
+              </label>
+              <input
+                type="url"
+                name="repositorio"
+                value={projectData.repositorio}
+                onChange={handleChange}
+                placeholder="https://github.com/user/project"
+              />
+            </div>
 
-      <input
-        name="deploy"
-        placeholder="Deploy URL"
-        value={form.deploy}
-        onChange={handleChange}
-      />
+          <div className="input-group">
+              <label>
+                <i className="fa-solid fa-globe"></i>
+                Live Demo
+              </label>
+              <input
+                type="url"
+                name="deploy"
+                value={projectData.deploy}
+                onChange={handleChange}
+                placeholder="https://project.com"
+              />
+            </div>
+          </div>
 
-      <input
-        name="image"
-        placeholder="Imagen URL (opcional)"
-        value={form.image}
-        onChange={handleChange}
-      />
+            <div className="photo-section">
+              <div className="profile-preview">
+                <div className="avatar-placeholder">
+                  <i className="fa-solid fa-image"></i>
+                </div>
+                <button type="button" className="btn-edit-photo">
+                  <i className="fa-solid fa-pen"></i>
+                </button>
+              </div>
 
-      <p style={{ color: "red" }}>{error}</p>
+              <div className="photo-info">
+                <h4>Project Preview</h4>
+                <p>The project image will appear here</p>
+                <div className="photo-actions">
+                  <input
+                    id="Foto_proyecto"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setProjectData({...projectData, imagen: e.target.files[0]
+                      })
+                    }
+                  style={{ display: "none" }}
+                  />
+                  <label htmlFor="Foto_proyecto" className="btn-upload">
+                    <i className="fa-solid fa-cloud-upload-alt"></i>
+                    Choose file
+                  </label>
+              <span className="file-hint">{projectData.imagen ? projectData.imagen.name : "JPG, PNG • Max 5MB"}</span>
+                </div>
+              </div>
+            </div>
 
-      {/* BOTONES */}
-      {editIndex === null ? (
-        <button type="button" className="btn-primary" onClick={addProject}>
-          Agregar
-        </button>
-      ) : (
-        <button type="button" className="btn-edit" onClick={updateProject}>
-          Actualizar
-        </button>
-      )}
-
-      <button type="button" className="btn-clear" onClick={clearForm}>
-        Limpiar
-      </button>
-
-      {/* LISTA */}
-      <ul className="item-list">
-        {projects.map((project, index) => (
-          <li key={index}>
-            <strong>{project.name}</strong>
-
-            <p>{project.tech}</p>
-
-            <button type="button" className="btn-edit" onClick={() => startEdit(project, index)}>
-              Editar
+          <div className="skill-actions">
+            <button type="button" className="btn-upload">
+              <i className="fa-solid fa-eraser"></i>
+              Clear
             </button>
-
-            <button type="button" className="btn-delete" onClick={() => deleteProject(index)}>
-              Eliminar
+            <button type="button" className="btn-upload">
+              <i className="fa-solid fa-plus"></i>
+              Add Project
             </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+          </div>
+        </div>
+
+    </section>
   );
 }
 
