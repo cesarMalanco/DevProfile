@@ -1,7 +1,38 @@
+import { useEffect, useState } from "react";
 import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 
+const useImagePreview = (image) => {
+  const [preview, setPreview] = useState(null);
+  const backendUrl = "http://localhost:3000";
+
+  useEffect(() => {
+    if (!image) {
+      setPreview(null);
+      return;
+    }
+
+    if (typeof image === "string") {
+      const fullUrl =
+        image.startsWith("http") || image.startsWith("/")
+          ? image
+          : `${backendUrl}/uploads/${image}`;
+      setPreview(fullUrl);
+      return;
+    }
+
+    const url = URL.createObjectURL(image);
+    setPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
+
+  return preview;
+};
+
 function PersonalForm({ formData, setFormData, foto, setFoto, errors }) {
+  const imagePreview = useImagePreview(foto);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({...formData, [name]: value});
@@ -20,7 +51,11 @@ function PersonalForm({ formData, setFormData, foto, setFoto, errors }) {
       <div className="photo-section">
         <div className="profile-preview">
           <div className="avatar-placeholder">
-            <i className="fa-solid fa-user-astronaut"></i>
+            {imagePreview ? (
+              <img src={imagePreview} alt="Profile preview" className="avatar-image" />
+            ) : (
+              <i className="fa-solid fa-user-astronaut"></i>
+            )}
           </div>
           <button type="button" className="btn-edit-photo">
             <i className="fa-solid fa-camera"></i>

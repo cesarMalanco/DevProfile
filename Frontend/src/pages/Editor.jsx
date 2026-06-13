@@ -533,95 +533,94 @@ function Editor() {
 
       const profileResult = await createProfile(data);
       const id_perfil = profileResult.insertId;
+      let id_cv = isEditing && editingCvId ? editingCvId : null;
+
+      const newName = formData.nombre_completo
+        ? `${formData.nombre_completo} CV`
+        : `${user.nombre} CV`;
 
       if (isEditing && editingCvId) {
-        const newName = formData.nombre_completo
-          ? `${formData.nombre_completo} CV`
-          : `${user.nombre} CV`;
-
         await updateCv(editingCvId, { nombre_cv: newName });
       } else {
         const cvPayload = {
           id_usuario: user.id_usuario,
           id_plantilla: null,
-          nombre_cv: formData.nombre_completo
-            ? `${formData.nombre_completo} CV`
-            : `${user.nombre} CV`
+          nombre_cv: newName
         };
 
         const cvResult = await createCv(cvPayload);
-        const id_cv = cvResult.insertId;
-
-        const skillsToSave = [
-          ...skillsList,
-          ...(hasFormValues(skillData) ? [skillData] : [])
-        ].filter(hasFormValues);
-
-        for (const skill of skillsToSave) {
-          await addSkill({
-            ...skill,
-            id_usuario: user.id_usuario,
-            id_perfil: id_perfil,
-            id_cv
-          });
-        }
-
-        const projectsToSave = [
-          ...projectsList,
-          ...(hasFormValues(projectData) ? [projectData] : [])
-        ].filter(hasFormValues);
-
-        for (const project of projectsToSave) {
-          const projectForm = new FormData();
-          projectForm.append("id_usuario", user.id_usuario);
-          projectForm.append("id_perfil", id_perfil);
-          projectForm.append("id_cv", id_cv);
-          projectForm.append("nombre", project.nombre);
-          projectForm.append("descripcion", project.descripcion);
-          projectForm.append("tecnologias", project.tecnologias);
-          projectForm.append("repositorio", project.repositorio);
-          projectForm.append("deploy", project.deploy);
-
-          if (project.imagen) {
-            projectForm.append("Foto_proyecto", project.imagen);
-          }
-
-          await createProject(projectForm);
-        }
-
-        const educationToSave = [
-          ...educationList,
-          ...(hasFormValues(educationData) ? [educationData] : [])
-        ].filter(hasFormValues);
-
-        for (const education of educationToSave) {
-          await createEducation({
-            ...education,
-            id_usuario: user.id_usuario,
-            id_perfil: id_perfil,
-            id_cv
-          });
-        }
-
-        const languagesToSave = [
-          ...languagesList,
-          ...(hasFormValues(languageData) ? [languageData] : [])
-        ].filter(hasFormValues);
-
-        for (const language of languagesToSave) {
-          await createLanguage({
-            ...language,
-            id_usuario: user.id_usuario,
-            id_perfil: id_perfil,
-            id_cv
-          });
-        }
-
-        setSkillsList([]);
-        setProjectsList([]);
-        setEducationList([]);
-        setLanguagesList([]);
+        id_cv = cvResult.insertId;
       }
+
+      const skillsToSave = [
+        ...skillsList.filter((skill) => !isEditing || !skill._saved),
+        ...(hasFormValues(skillData) ? [skillData] : [])
+      ].filter(hasFormValues);
+
+      for (const skill of skillsToSave) {
+        await addSkill({
+          ...skill,
+          id_usuario: user.id_usuario,
+          id_perfil,
+          id_cv
+        });
+      }
+
+      const projectsToSave = [
+        ...projectsList.filter((project) => !isEditing || !project._saved),
+        ...(hasFormValues(projectData) ? [projectData] : [])
+      ].filter(hasFormValues);
+
+      for (const project of projectsToSave) {
+        const projectForm = new FormData();
+        projectForm.append("id_usuario", user.id_usuario);
+        projectForm.append("id_perfil", id_perfil);
+        projectForm.append("id_cv", id_cv);
+        projectForm.append("nombre", project.nombre);
+        projectForm.append("descripcion", project.descripcion);
+        projectForm.append("tecnologias", project.tecnologias);
+        projectForm.append("repositorio", project.repositorio);
+        projectForm.append("deploy", project.deploy);
+
+        if (project.imagen) {
+          projectForm.append("Foto_proyecto", project.imagen);
+        }
+
+        await createProject(projectForm);
+      }
+
+      const educationToSave = [
+        ...educationList.filter((education) => !isEditing || !education._saved),
+        ...(hasFormValues(educationData) ? [educationData] : [])
+      ].filter(hasFormValues);
+
+      for (const education of educationToSave) {
+        await createEducation({
+          ...education,
+          id_usuario: user.id_usuario,
+          id_perfil,
+          id_cv
+        });
+      }
+
+      const languagesToSave = [
+        ...languagesList.filter((language) => !isEditing || !language._saved),
+        ...(hasFormValues(languageData) ? [languageData] : [])
+      ].filter(hasFormValues);
+
+      for (const language of languagesToSave) {
+        await createLanguage({
+          ...language,
+          id_usuario: user.id_usuario,
+          id_perfil,
+          id_cv
+        });
+      }
+
+      setSkillsList([]);
+      setProjectsList([]);
+      setEducationList([]);
+      setLanguagesList([]);
 
       localStorage.removeItem("formData");
       localStorage.removeItem("skillData");
@@ -718,15 +717,16 @@ function Editor() {
             linkedin: data.profile.linkedin || "",
             portafolio: data.profile.portafolio || ""
           });
+          setFoto(data.profile.foto_perfil || null);
         }
 
         if (data.skills && data.skills.length > 0) {
-          setSkillsList(data.skills);
+          setSkillsList(data.skills.map((item) => ({ ...item, _saved: true })));
           setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
         }
 
         if (data.projects && data.projects.length > 0) {
-          setProjectsList(data.projects);
+          setProjectsList(data.projects.map((item) => ({ ...item, _saved: true })));
           setProjectData({
             nombre: "",
             descripcion: "",
@@ -738,7 +738,7 @@ function Editor() {
         }
 
         if (data.education && data.education.length > 0) {
-          setEducationList(data.education);
+          setEducationList(data.education.map((item) => ({ ...item, _saved: true })));
           setEducationData({
             institucion: "",
             programa: "",
@@ -749,7 +749,7 @@ function Editor() {
         }
 
         if (data.languages && data.languages.length > 0) {
-          setLanguagesList(data.languages);
+          setLanguagesList(data.languages.map((item) => ({ ...item, _saved: true })));
           setLanguageData({ idioma: "", nivel: "", descripcion: "" });
         }
 

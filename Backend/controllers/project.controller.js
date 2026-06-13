@@ -3,7 +3,7 @@ const ProjectModel = require("../models/project.model");
 const createProject = async (req, res) => {
     try {
         const imagePath = req.file ? req.file.filename : null;
-        const projectData = {...req.body, imagen: imagePath};
+        const projectData = { ...req.body, imagen: imagePath };
 
         const result = await ProjectModel.createProject(projectData);
 

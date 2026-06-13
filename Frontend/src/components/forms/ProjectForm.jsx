@@ -1,8 +1,55 @@
+import { useEffect, useState } from "react";
 import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 import AccordionItem from "../Accordion";
 
+const useImagePreview = (image) => {
+  const [preview, setPreview] = useState(null);
+  const backendUrl = "http://localhost:3000";
+
+  useEffect(() => {
+    if (!image) {
+      setPreview(null);
+      return;
+    }
+
+    if (typeof image === "string") {
+      const fullUrl =
+        image.startsWith("http") || image.startsWith("/")
+          ? image
+          : `${backendUrl}/uploads/${image}`;
+      setPreview(fullUrl);
+      return;
+    }
+
+    const url = URL.createObjectURL(image);
+    setPreview(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [image]);
+
+  return preview;
+};
+
+const ImagePreview = ({ image }) => {
+  const preview = useImagePreview(image);
+
+  return (
+    <>
+      {preview ? (
+        <img src={preview} alt="Project preview" className="avatar-image" />
+      ) : (
+        <i className="fa-solid fa-image"></i>
+      )}
+    </>
+  );
+};
+
 function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, onClear, onUpdate, errors = {} }) {
+  const currentImagePreview = useImagePreview(projectData.imagen);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProjectData({ ...projectData, [name]: value });
@@ -10,6 +57,19 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
 
   const handleListChange = (index, name, value) => {
     onUpdate(index, name, value);
+  };
+
+  const handleListImageChange = (index, file) => {
+    onUpdate(index, "imagen", file);
+  };
+
+  const handleListRemoveImage = (index) => {
+    onUpdate(index, "imagen", null);
+  };
+
+  const getImageLabel = (image) => {
+    if (!image) return "JPG, PNG • Max 5MB";
+    return typeof image === "string" ? image : image.name;
   };
 
   return (
@@ -75,6 +135,43 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
                         value={project.deploy}
                         onChange={(e) => handleListChange(index, "deploy", e.target.value)}
                       />
+                    </div>
+                  </div>
+                  <div className="photo-section project-photo-section">
+                    <div className="profile-preview">
+                      <div className="avatar-placeholder">
+                        <ImagePreview image={project.imagen} />
+                      </div>
+                    </div>
+                    <div className="photo-info">
+                      <h4>Project Image</h4>
+                      <p>Upload or change the image for this project</p>
+                      <div className="photo-actions">
+                        <input
+                          id={`Foto_proyecto_${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleListImageChange(index, e.target.files[0])
+                          }
+                          style={{ display: "none" }}
+                        />
+                        <label htmlFor={`Foto_proyecto_${index}`} className="btn-upload">
+                          <i className="fa-solid fa-cloud-upload-alt"></i>
+                          Change file
+                        </label>
+                        {project.imagen && (
+                          <button
+                            type="button"
+                            className="btn-upload btn-remove"
+                            onClick={() => handleListRemoveImage(index)}
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <span className="file-hint">{getImageLabel(project.imagen)}</span>
                     </div>
                   </div>
                 </AccordionItem>
@@ -164,7 +261,7 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
             <div className="photo-section">
               <div className="profile-preview">
                 <div className="avatar-placeholder">
-                  <i className="fa-solid fa-image"></i>
+                  <ImagePreview image={projectData.imagen} />
                 </div>
                 <button type="button" className="btn-edit-photo">
                   <i className="fa-solid fa-pen"></i>
@@ -180,17 +277,26 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
                     type="file"
                     accept="image/*"
                     onChange={(e) =>
-                      setProjectData({...projectData, imagen: e.target.files[0]
-                      })
+                      setProjectData({ ...projectData, imagen: e.target.files[0] })
                     }
-                  style={{ display: "none" }}
+                    style={{ display: "none" }}
                   />
                   <label htmlFor="Foto_proyecto" className="btn-upload">
                     <i className="fa-solid fa-cloud-upload-alt"></i>
                     Choose file
                   </label>
-              <span className="file-hint">{projectData.imagen ? projectData.imagen.name : "JPG, PNG • Max 5MB"}</span>
+                  {projectData.imagen && (
+                    <button
+                      type="button"
+                      className="btn-upload btn-remove"
+                      onClick={() => setProjectData({ ...projectData, imagen: null })}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                      Remove
+                    </button>
+                  )}
                 </div>
+                <span className="file-hint">{getImageLabel(projectData.imagen)}</span>
               </div>
             </div>
 
