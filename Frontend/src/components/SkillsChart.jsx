@@ -20,21 +20,25 @@ export default function SkillsChart() {
   const labels = useMemo(() => skills.map((s) => s.nombre || "-"), [skills]);
   const values = useMemo(() => skills.map((s) => levelMap[s.nivel] || 0), [skills]);
 
-  const colors = useMemo(() => labels.map((_, i) => `hsl(${(i * 40) % 360} 70% 50% / 0.85)`), [labels]);
+  const colors = useMemo(
+    () => labels.map(() => "rgba(30, 58, 138, 0.92)"),
+    [labels]
+  );
 
   const data = useMemo(
     () => ({
       labels,
       datasets: [
         {
-          label: "Nivel (1=Básico,3=Avanzado)",
+          label: "Skill mastery",
           data: values,
           backgroundColor: colors,
-          borderColor: colors.map((c) => c.replace(/0\.85\)$/, "1)")),
-          borderWidth: 1,
-          borderRadius: 8,
-          barPercentage: 0.6,
+          borderColor: "rgba(30, 58, 138, 1)",
+          borderWidth: 2,
+          borderRadius: 12,
+          barPercentage: 0.56,
           categoryPercentage: 0.7,
+          hoverBackgroundColor: "rgba(30, 58, 138, 0.98)",
         },
       ],
     }),
@@ -45,10 +49,10 @@ export default function SkillsChart() {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: 8 },
+      layout: { padding: 12 },
       scales: {
         x: {
-          ticks: { color: "#374151", maxRotation: 45, minRotation: 0 },
+          ticks: { color: "#334155", maxRotation: 45, minRotation: 0 },
           grid: { display: false },
         },
         y: {
@@ -58,28 +62,29 @@ export default function SkillsChart() {
           ticks: {
             stepSize: 1,
             callback: function (value) {
-              if (value === 1) return "Básico";
-              if (value === 2) return "Intermedio";
-              if (value === 3) return "Avanzado";
+              if (value === 1) return "Basic";
+              if (value === 2) return "Intermediate";
+              if (value === 3) return "Advanced";
               return value;
             },
-            color: "#374151",
+            color: "#334155",
           },
-          grid: { color: "rgba(15, 23, 42, 0.04)" },
+          grid: { color: "rgba(148, 163, 184, 0.12)" },
         },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           enabled: true,
-          backgroundColor: "rgba(17,24,39,0.95)",
-          titleColor: "#fff",
-          bodyColor: "#e5e7eb",
-          padding: 10,
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          titleColor: "#f8fafc",
+          bodyColor: "#e2e8f0",
+          padding: 12,
+          boxPadding: 6,
           callbacks: {
             label: (ctx) => {
               const v = ctx.parsed.y;
-              return `Nivel: ${v} (${v === 1 ? "Básico" : v === 2 ? "Intermedio" : v === 3 ? "Avanzado" : ""})`;
+              return `Level: ${v} (${v === 1 ? "Basic" : v === 2 ? "Intermediate" : v === 3 ? "Advanced" : ""})`;
             },
           },
         },

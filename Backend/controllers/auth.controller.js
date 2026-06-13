@@ -9,7 +9,7 @@ const register = async (req, res) => {
 
         if (!nombre || !email || !password) {
             return res.status(400).json({
-                message: "Todos los campos son obligatorios"
+                message: "All fields are required"
             });
         }
 
@@ -17,7 +17,7 @@ const register = async (req, res) => {
 
         if (userExists.length > 0) {
             return res.status(409).json({
-                message: "El correo ya está registrado"
+                message: "Email is already registered"
             });
         }
 
@@ -25,13 +25,13 @@ const register = async (req, res) => {
 
         await pool.query(`INSERT INTO usuarios (nombre,email,password) VALUES (?,?,?)`, [nombre,email,hashedPassword]);
         res.status(201).json({
-            message: "Usuario registrado correctamente"
+            message: "User registered successfully"
         });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: "Error interno del servidor"
+            message: "Internal server error"
         });
     }
 };
@@ -43,7 +43,7 @@ const login = async (req, res) => {
 
         if (users.length === 0) {
             return res.status(401).json({
-                message: "Credenciales inválidas"
+                message: "Invalid credentials"
             });
         }
 
@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
         if (!validPassword) {
             return res.status(401).json({
-                message: "Credenciales inválidas"
+                message: "Invalid credentials"
             });
         }
 
@@ -68,7 +68,7 @@ const login = async (req, res) => {
         );
 
         res.status(200).json({
-            message: "Login exitoso",
+            message: "Login successful",
             token,
             usuario: {
                 id_usuario: user.id_usuario,
@@ -80,7 +80,7 @@ const login = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: "Error interno del servidor"
+            message: "Internal server error"
         });
     }
 };

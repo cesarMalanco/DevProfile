@@ -10,21 +10,21 @@ const createProfile = async (req, res) => {
         if (existingProfile) {
             await ProfileModel.updateProfile(existingProfile.id_perfil, profileData);
             return res.status(200).json({
-                message: "Perfil actualizado correctamente",
+                message: "Profile updated successfully",
                 insertId: existingProfile.id_perfil
             });
         }
 
         const result = await ProfileModel.createProfile(profileData);
         res.status(201).json({
-            message: "Perfil guardado correctamente",
+            message: "Profile saved successfully",
             insertId: result.insertId
         });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: "Error al guardar perfil"
+            message: "Error saving profile"
         });
     }
 };
@@ -34,7 +34,7 @@ const getProfileStats = async (req, res) => {
         const userId = req.query.id_usuario;
 
         if (!userId) {
-            return res.status(400).json({ message: "id_usuario es requerido" });
+            return res.status(400).json({ message: "User ID is required" });
         }
 
         const stats = await ProfileModel.getProfileStats(userId);
@@ -47,7 +47,7 @@ const getProfileStats = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error obteniendo estadísticas" });
+        res.status(500).json({ message: "Error fetching statistics" });
     }
 };
 

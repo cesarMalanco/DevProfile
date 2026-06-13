@@ -4,6 +4,7 @@ import SkillForm from "../components/forms/SkillForm";
 import ProjectForm from "../components/forms/ProjectForm";
 import EducationForm from "../components/forms/EducationForm";
 import LanguageForm from "../components/forms/LanguageForm";
+import AccordionItem from "../components/Accordion";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createProfile } from "../services/profileService";
@@ -63,9 +64,19 @@ function Editor() {
     nivel: "",
     descripcion: ""
   });
+
+  const [skillsList, setSkillsList] = useState([]);
+  const [projectsList, setProjectsList] = useState([]);
+  const [educationList, setEducationList] = useState([]);
+  const [languagesList, setLanguagesList] = useState([]);
+
   const [foto, setFoto] = useState(null);
 
   const [errors, setErrors] = useState({});
+  const [skillErrors, setSkillErrors] = useState({});
+  const [projectErrors, setProjectErrors] = useState({});
+  const [educationErrors, setEducationErrors] = useState({});
+  const [languageErrors, setLanguageErrors] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editingCvId, setEditingCvId] = useState(null);
 
@@ -76,54 +87,333 @@ function Editor() {
     }
   }, []);
 
+  const hasFormValues = (obj) =>
+    Object.values(obj).some((value) => {
+      if (value === null || value === undefined) return false;
+      if (typeof value === "string") return value.trim() !== "";
+      if (value instanceof File) return true;
+      return Boolean(value);
+    });
+
+  const getFirstValidationMessage = (validationErrors) =>
+    Object.values(validationErrors)[0] || "Please complete all required fields.";
+
+  const validateSkillData = (skill, prefix = "Skill") => {
+    const newErrors = {};
+
+    if (!skill.nombre?.trim()) {
+      newErrors.nombre = `${prefix} name is required`;
+    }
+    if (!skill.categoria?.trim()) {
+      newErrors.categoria = `${prefix} category is required`;
+    }
+    if (!skill.nivel?.trim()) {
+      newErrors.nivel = `${prefix} level is required`;
+    }
+    if (!skill.descripcion?.trim()) {
+      newErrors.descripcion = `${prefix} description is required`;
+    }
+
+    return newErrors;
+  };
+
+  const validateProjectData = (project, prefix = "Project") => {
+    const newErrors = {};
+
+    if (!project.nombre?.trim()) {
+      newErrors.nombre = `${prefix} name is required`;
+    }
+    if (!project.descripcion?.trim()) {
+      newErrors.descripcion = `${prefix} description is required`;
+    }
+    if (!project.tecnologias?.trim()) {
+      newErrors.tecnologias = `${prefix} technologies are required`;
+    }
+    if (project.repositorio && !isURL(project.repositorio)) {
+      newErrors.repositorio = `${prefix} repository must be a valid URL`;
+    }
+    if (project.deploy && !isURL(project.deploy)) {
+      newErrors.deploy = `${prefix} live demo must be a valid URL`;
+    }
+
+    return newErrors;
+  };
+
+  const validateEducationData = (education, prefix = "Education entry") => {
+    const newErrors = {};
+
+    if (!education.institucion?.trim()) {
+      newErrors.institucion = `${prefix} institution is required`;
+    }
+    if (!education.programa?.trim()) {
+      newErrors.programa = `${prefix} program or course is required`;
+    }
+    if (!education.periodo?.trim()) {
+      newErrors.periodo = `${prefix} period is required`;
+    }
+    if (education.evidencia && !isURL(education.evidencia)) {
+      newErrors.evidencia = `${prefix} evidence link must be a valid URL`;
+    }
+
+    return newErrors;
+  };
+
+  const validateLanguageData = (language, prefix = "Language") => {
+    const newErrors = {};
+
+    if (!language.idioma?.trim()) {
+      newErrors.idioma = `${prefix} is required`;
+    }
+    if (!language.nivel?.trim()) {
+      newErrors.nivel = `${prefix} level is required`;
+    }
+    if (!language.descripcion?.trim()) {
+      newErrors.descripcion = `${prefix} description is required`;
+    }
+
+    return newErrors;
+  };
+
+  const validateListItems = (list, validator, title) => {
+    for (let i = 0; i < list.length; i += 1) {
+      const itemErrors = validator(list[i], `${title} ${i + 1}`);
+      if (Object.keys(itemErrors).length > 0) {
+        return itemErrors;
+      }
+    }
+    return {};
+  };
+
+  const handleAddSkill = async () => {
+    if (!hasFormValues(skillData)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Action not allowed",
+        text: "Please complete and save the current skill before adding a new one."
+      });
+      return;
+    }
+
+    const validationErrors = validateSkillData(skillData);
+    if (Object.keys(validationErrors).length > 0) {
+      setSkillErrors(validationErrors);
+      await Swal.fire({
+        icon: "error",
+        title: "Invalid skill",
+        text: getFirstValidationMessage(validationErrors)
+      });
+      return;
+    }
+
+    setSkillErrors({});
+    setSkillsList((prev) => [...prev, skillData]);
+    setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
+  };
+
+  const handleClearSkill = () => {
+    setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
+    setSkillErrors({});
+  };
+
+  const handleUpdateSkill = (index, field, value) => {
+    setSkillsList((prev) =>
+      prev.map((skill, idx) =>
+        idx === index ? { ...skill, [field]: value } : skill
+      )
+    );
+  };
+
+  const handleAddProject = async () => {
+    if (!hasFormValues(projectData)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Action not allowed",
+        text: "Please complete and save the current project before adding a new one."
+      });
+      return;
+    }
+
+    const validationErrors = validateProjectData(projectData);
+    if (Object.keys(validationErrors).length > 0) {
+      setProjectErrors(validationErrors);
+      await Swal.fire({
+        icon: "error",
+        title: "Invalid project",
+        text: getFirstValidationMessage(validationErrors)
+      });
+      return;
+    }
+
+    setProjectErrors({});
+    setProjectsList((prev) => [...prev, projectData]);
+    setProjectData({
+      nombre: "",
+      descripcion: "",
+      tecnologias: "",
+      repositorio: "",
+      deploy: "",
+      imagen: null
+    });
+  };
+
+  const handleClearProject = () => {
+    setProjectData({
+      nombre: "",
+      descripcion: "",
+      tecnologias: "",
+      repositorio: "",
+      deploy: "",
+      imagen: null
+    });
+    setProjectErrors({});
+  };
+
+  const handleUpdateProject = (index, field, value) => {
+    setProjectsList((prev) =>
+      prev.map((project, idx) =>
+        idx === index ? { ...project, [field]: value } : project
+      )
+    );
+  };
+
+  const handleAddEducation = async () => {
+    if (!hasFormValues(educationData)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Action not allowed",
+        text: "Please complete and save the current education entry before adding a new one."
+      });
+      return;
+    }
+
+    const validationErrors = validateEducationData(educationData);
+    if (Object.keys(validationErrors).length > 0) {
+      setEducationErrors(validationErrors);
+      await Swal.fire({
+        icon: "error",
+        title: "Invalid education entry",
+        text: getFirstValidationMessage(validationErrors)
+      });
+      return;
+    }
+
+    setEducationErrors({});
+    setEducationList((prev) => [...prev, educationData]);
+    setEducationData({
+      institucion: "",
+      programa: "",
+      periodo: "",
+      descripcion: "",
+      evidencia: ""
+    });
+  };
+
+  const handleClearEducation = () => {
+    setEducationData({
+      institucion: "",
+      programa: "",
+      periodo: "",
+      descripcion: "",
+      evidencia: ""
+    });
+    setEducationErrors({});
+  };
+
+  const handleUpdateEducation = (index, field, value) => {
+    setEducationList((prev) =>
+      prev.map((education, idx) =>
+        idx === index ? { ...education, [field]: value } : education
+      )
+    );
+  };
+
+  const handleAddLanguage = async () => {
+    if (!hasFormValues(languageData)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Action not allowed",
+        text: "Please complete and save the current language before adding a new one."
+      });
+      return;
+    }
+
+    const validationErrors = validateLanguageData(languageData);
+    if (Object.keys(validationErrors).length > 0) {
+      setLanguageErrors(validationErrors);
+      await Swal.fire({
+        icon: "error",
+        title: "Invalid language entry",
+        text: getFirstValidationMessage(validationErrors)
+      });
+      return;
+    }
+
+    setLanguageErrors({});
+    setLanguagesList((prev) => [...prev, languageData]);
+    setLanguageData({ idioma: "", nivel: "", descripcion: "" });
+  };
+
+  const handleClearLanguage = () => {
+    setLanguageData({ idioma: "", nivel: "", descripcion: "" });
+    setLanguageErrors({});
+  };
+
+  const handleUpdateLanguage = (index, field, value) => {
+    setLanguagesList((prev) =>
+      prev.map((language, idx) =>
+        idx === index ? { ...language, [field]: value } : language
+      )
+    );
+  };
+
   const validatePersonalForm = () => {
     const newErrors = {};
 
     if (!formData.nombre_completo.trim()) {
-      newErrors.nombre_completo = "El nombre es obligatorio";
+      newErrors.nombre_completo = "Name is required";
     } else if (formData.nombre_completo.length < 3) {
-      newErrors.nombre_completo = "Mínimo 3 caracteres";
+      newErrors.nombre_completo = "Minimum 3 characters";
     }
 
     if (!formData.profesion.trim()) {
-      newErrors.profesion = "La profesión es obligatoria";
+      newErrors.profesion = "Profession is required";
     }
 
     if (!formData.correo.trim()) {
-      newErrors.correo = "El correo es obligatorio";
+      newErrors.correo = "Email is required";
     } else if (!isEmail(formData.correo)) {
-      newErrors.correo = "Correo electrónico inválido";
+      newErrors.correo = "Invalid email address";
     }
 
     if (!formData.telefono.trim()) {
-      newErrors.telefono = "El teléfono es obligatorio";
+      newErrors.telefono = "Phone is required";
     } else if (!/^\d+$/.test(formData.telefono)) {
-      newErrors.telefono = "El teléfono solo debe contener números";
+      newErrors.telefono = "Phone must contain only numbers";
     } else if (formData.telefono.length !== 10) {
-      newErrors.telefono = "El teléfono debe tener 10 dígitos";
+      newErrors.telefono = "Phone must be 10 digits";
     }
 
     if (!formData.ciudad.trim()) {
-      newErrors.ciudad = "La ciudad es obligatoria";
+      newErrors.ciudad = "City is required";
     }
 
     if (!formData.descripcion.trim()) {
-      newErrors.descripcion = "La descripción es obligatoria";
+      newErrors.descripcion = "Description is required";
     } else if (formData.descripcion.length < 20) {
       newErrors.descripcion =
-        "La descripción debe tener al menos 20 caracteres";
+        "Description must have at least 20 characters";
     }
 
     if (formData.github && !isURL(formData.github)) {
-      newErrors.github = "URL de GitHub inválida";
+      newErrors.github = "Invalid GitHub URL";
     }
 
     if (formData.linkedin && !isURL(formData.linkedin)) {
-      newErrors.linkedin = "URL de LinkedIn inválida";
+      newErrors.linkedin = "Invalid LinkedIn URL";
     }
 
     if (formData.portafolio && !isURL(formData.portafolio)) {
-      newErrors.portafolio = "URL del portafolio inválida";
+      newErrors.portafolio = "Invalid portfolio URL";
     }
 
     return newErrors;
@@ -134,17 +424,96 @@ function Editor() {
       const validationErrors = validatePersonalForm();
 
       if (Object.keys(validationErrors).length > 0) {
-
         setErrors(validationErrors);
 
         await Swal.fire({
           icon: "error",
-          title: "Formulario inválido",
-          text: "Corrige los errores antes de continuar"
+          title: "Invalid form",
+          text: "Please fix the errors before continuing",
         });
-
         return;
       }
+
+      const currentSkillErrors = hasFormValues(skillData) ? validateSkillData(skillData, "Current skill") : {};
+      if (Object.keys(currentSkillErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid skill",
+          text: getFirstValidationMessage(currentSkillErrors)
+        });
+        return;
+      }
+
+      const currentProjectErrors = hasFormValues(projectData) ? validateProjectData(projectData, "Current project") : {};
+      if (Object.keys(currentProjectErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid project",
+          text: getFirstValidationMessage(currentProjectErrors)
+        });
+        return;
+      }
+
+      const currentEducationErrors = hasFormValues(educationData) ? validateEducationData(educationData, "Current education entry") : {};
+      if (Object.keys(currentEducationErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid education entry",
+          text: getFirstValidationMessage(currentEducationErrors)
+        });
+        return;
+      }
+
+      const currentLanguageErrors = hasFormValues(languageData) ? validateLanguageData(languageData, "Current language") : {};
+      if (Object.keys(currentLanguageErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid language entry",
+          text: getFirstValidationMessage(currentLanguageErrors)
+        });
+        return;
+      }
+
+      const listSkillErrors = validateListItems(skillsList, validateSkillData, "Skill");
+      if (Object.keys(listSkillErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid skill",
+          text: getFirstValidationMessage(listSkillErrors)
+        });
+        return;
+      }
+
+      const listProjectErrors = validateListItems(projectsList, validateProjectData, "Project");
+      if (Object.keys(listProjectErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid project",
+          text: getFirstValidationMessage(listProjectErrors)
+        });
+        return;
+      }
+
+      const listEducationErrors = validateListItems(educationList, validateEducationData, "Education entry");
+      if (Object.keys(listEducationErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid education entry",
+          text: getFirstValidationMessage(listEducationErrors)
+        });
+        return;
+      }
+
+      const listLanguageErrors = validateListItems(languagesList, validateLanguageData, "Language");
+      if (Object.keys(listLanguageErrors).length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "Invalid language entry",
+          text: getFirstValidationMessage(listLanguageErrors)
+        });
+        return;
+      }
+
       const data = new FormData();
 
       data.append("id_usuario", user.id_usuario);
@@ -183,43 +552,75 @@ function Editor() {
         const cvResult = await createCv(cvPayload);
         const id_cv = cvResult.insertId;
 
-            const skillResult = await addSkill({
-              ...skillData,
-              id_usuario: user.id_usuario,
-              id_perfil: id_perfil,
-              id_cv
-            });
+        const skillsToSave = [
+          ...skillsList,
+          ...(hasFormValues(skillData) ? [skillData] : [])
+        ].filter(hasFormValues);
 
-        const projectForm = new FormData();
-        projectForm.append("id_usuario", user.id_usuario);
-        projectForm.append("id_perfil", id_perfil);
-        projectForm.append("id_cv", id_cv);
-
-        projectForm.append("nombre", projectData.nombre);
-        projectForm.append("descripcion", projectData.descripcion);
-        projectForm.append("tecnologias", projectData.tecnologias);
-        projectForm.append("repositorio", projectData.repositorio);
-        projectForm.append("deploy", projectData.deploy);
-
-        if (projectData.imagen) {
-          projectForm.append("Foto_proyecto", projectData.imagen);
+        for (const skill of skillsToSave) {
+          await addSkill({
+            ...skill,
+            id_usuario: user.id_usuario,
+            id_perfil: id_perfil,
+            id_cv
+          });
         }
 
-        const projectResult = await createProject(projectForm);
+        const projectsToSave = [
+          ...projectsList,
+          ...(hasFormValues(projectData) ? [projectData] : [])
+        ].filter(hasFormValues);
 
-        const educationResult = await createEducation({
-          ...educationData,
-          id_usuario: user.id_usuario,
-          id_perfil: id_perfil,
-          id_cv
-        });
+        for (const project of projectsToSave) {
+          const projectForm = new FormData();
+          projectForm.append("id_usuario", user.id_usuario);
+          projectForm.append("id_perfil", id_perfil);
+          projectForm.append("id_cv", id_cv);
+          projectForm.append("nombre", project.nombre);
+          projectForm.append("descripcion", project.descripcion);
+          projectForm.append("tecnologias", project.tecnologias);
+          projectForm.append("repositorio", project.repositorio);
+          projectForm.append("deploy", project.deploy);
 
-        const languageResult = await createLanguage({
-          ...languageData,
-          id_usuario: user.id_usuario,
-          id_perfil: id_perfil,
-          id_cv
-        });
+          if (project.imagen) {
+            projectForm.append("Foto_proyecto", project.imagen);
+          }
+
+          await createProject(projectForm);
+        }
+
+        const educationToSave = [
+          ...educationList,
+          ...(hasFormValues(educationData) ? [educationData] : [])
+        ].filter(hasFormValues);
+
+        for (const education of educationToSave) {
+          await createEducation({
+            ...education,
+            id_usuario: user.id_usuario,
+            id_perfil: id_perfil,
+            id_cv
+          });
+        }
+
+        const languagesToSave = [
+          ...languagesList,
+          ...(hasFormValues(languageData) ? [languageData] : [])
+        ].filter(hasFormValues);
+
+        for (const language of languagesToSave) {
+          await createLanguage({
+            ...language,
+            id_usuario: user.id_usuario,
+            id_perfil: id_perfil,
+            id_cv
+          });
+        }
+
+        setSkillsList([]);
+        setProjectsList([]);
+        setEducationList([]);
+        setLanguagesList([]);
       }
 
       localStorage.removeItem("formData");
@@ -230,19 +631,19 @@ function Editor() {
 
       await Swal.fire({
         icon: "success",
-        title: "Perfil guardado",
-        text: "La información se guardó correctamente",
-        confirmButtonText: "Ver CV"
+        title: "Profile saved",
+        text: "Information saved successfully",
+        confirmButtonText: "View CV"
       });
 
       navigate("/preview");
     }catch(error){
-      console.error("Error al guardar:", error);
+      console.error("Error saving:", error);
 
       await Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo guardar la información"
+        text: "Could not save information"
       });
     }
   };
@@ -320,45 +721,36 @@ function Editor() {
         }
 
         if (data.skills && data.skills.length > 0) {
-          const s = data.skills[0];
-          setSkillData({
-            nombre: s.nombre || "",
-            categoria: s.categoria || "",
-            nivel: s.nivel || "",
-            descripcion: s.descripcion || ""
-          });
+          setSkillsList(data.skills);
+          setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
         }
 
         if (data.projects && data.projects.length > 0) {
-          const p = data.projects[0];
+          setProjectsList(data.projects);
           setProjectData({
-            nombre: p.nombre || "",
-            descripcion: p.descripcion || "",
-            tecnologias: p.tecnologias || "",
-            repositorio: p.repositorio || "",
-            deploy: p.deploy || "",
+            nombre: "",
+            descripcion: "",
+            tecnologias: "",
+            repositorio: "",
+            deploy: "",
             imagen: null
-        });
+          });
         }
 
         if (data.education && data.education.length > 0) {
-          const e = data.education[0];
+          setEducationList(data.education);
           setEducationData({
-            institucion: e.institucion || "",
-            programa: e.programa || "",
-            periodo: e.periodo || "",
-            descripcion: e.descripcion || "",
-            evidencia: e.evidencia || ""
+            institucion: "",
+            programa: "",
+            periodo: "",
+            descripcion: "",
+            evidencia: ""
           });
         }
 
         if (data.languages && data.languages.length > 0) {
-          const l = data.languages[0];
-          setLanguageData({
-            idioma: l.idioma || "",
-            nivel: l.nivel || "",
-            descripcion: l.descripcion || ""
-          });
+          setLanguagesList(data.languages);
+          setLanguageData({ idioma: "", nivel: "", descripcion: "" });
         }
 
       } catch (error) {
@@ -404,18 +796,38 @@ function Editor() {
         <SkillForm
           skillData={skillData}
           setSkillData={setSkillData}
+          skillsList={skillsList}
+          onAdd={handleAddSkill}
+          onClear={handleClearSkill}
+          onUpdate={handleUpdateSkill}
+          errors={skillErrors}
         />
         <ProjectForm
           projectData={projectData}
           setProjectData={setProjectData}
+          projectsList={projectsList}
+          onAdd={handleAddProject}
+          onClear={handleClearProject}
+          onUpdate={handleUpdateProject}
+          errors={projectErrors}
         />
         <EducationForm
           educationData={educationData}
           setEducationData={setEducationData}
+          educationList={educationList}
+          onAdd={handleAddEducation}
+          onClear={handleClearEducation}
+          onUpdate={handleUpdateEducation}
+          errors={educationErrors}
         />
         <LanguageForm
           languageData={languageData}
           setLanguageData={setLanguageData}
+          languagesList={languagesList}
+          onAdd={handleAddLanguage}
+          onClear={handleClearLanguage}
+          onUpdate={handleUpdateLanguage}
+          errors={languageErrors}
         />
         <div className ="form-actions">
           <button type ="button" className="cta-btn-primary" onClick={handleSubmit}>

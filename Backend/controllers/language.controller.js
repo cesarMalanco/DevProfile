@@ -5,14 +5,14 @@ const createLanguage = async (req, res) => {
         const result = await LanguageModel.createLanguage(req.body);
 
         res.status(201).json({
-            message: "Idioma creado correctamente",
+            message: "Language created successfully",
             insertId: result.insertId
         });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: "Error al crear idioma"
+            message: "Error creating language"
         });
     }
 };

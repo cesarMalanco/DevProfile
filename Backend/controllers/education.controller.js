@@ -5,14 +5,14 @@ const createEducation = async (req, res) => {
         await EducationModel.createEducation(req.body);
 
         res.status(201).json({
-            message: "Educación guardada correctamente"
+            message: "Education saved successfully"
         });
 
     } catch (error) {
         console.error(error);
 
         res.status(500).json({
-            message: "Error al guardar educación"
+            message: "Error saving education"
         });
     }
 };

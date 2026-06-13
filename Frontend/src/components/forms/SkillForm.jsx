@@ -1,11 +1,17 @@
 import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
+import AccordionItem from "../Accordion";
 
-function SkillForm({ skillData, setSkillData }) {
+function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, onUpdate, errors = {} }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSkillData({...skillData, [name]: value});};
+    setSkillData({ ...skillData, [name]: value });
+  };
+
+  const handleListChange = (index, name, value) => {
+    onUpdate(index, name, value);
+  };
 
   return (
     <section>
@@ -22,6 +28,57 @@ function SkillForm({ skillData, setSkillData }) {
           </div>
         </div>
 
+        {skillsList.length > 0 && (
+          <div className="accordion-group">
+            {skillsList.map((skill, index) => (
+              <AccordionItem
+                key={index}
+                title={`${skill.nombre || "Skill"}${skill.categoria ? ` - ${skill.categoria}` : ""}`}
+                icon="fa-solid fa-star"
+              >
+                <div className="form-grid">
+                  <div className="input-group">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      value={skill.nombre}
+                      onChange={(e) => handleListChange(index, "nombre", e.target.value)}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Category</label>
+                    <input
+                      type="text"
+                      value={skill.categoria}
+                      onChange={(e) => handleListChange(index, "categoria", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="input-group">
+                  <label>Level</label>
+                  <select
+                    value={skill.nivel}
+                    onChange={(e) => handleListChange(index, "nivel", e.target.value)}
+                  >
+                    <option value="">Select a level</option>
+                    <option value="Basico">Básico</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Avanzado">Avanzado</option>
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label>Description</label>
+                  <textarea
+                    rows="4"
+                    value={skill.descripcion}
+                    onChange={(e) => handleListChange(index, "descripcion", e.target.value)}
+                  />
+                </div>
+              </AccordionItem>
+            ))}
+          </div>
+        )}
+
         <div className="form-grid">
           <div className="input-group">
             <label>
@@ -35,6 +92,7 @@ function SkillForm({ skillData, setSkillData }) {
               onChange={handleChange}
               placeholder="React"
             />
+            {errors?.nombre && <span className="error-message">{errors.nombre}</span>}
           </div>
 
           <div className="input-group">
@@ -49,6 +107,7 @@ function SkillForm({ skillData, setSkillData }) {
               onChange={handleChange}
               placeholder="Frontend Development"
             />
+            {errors?.categoria && <span className="error-message">{errors.categoria}</span>}
           </div>
         </div>
 
@@ -67,6 +126,7 @@ function SkillForm({ skillData, setSkillData }) {
             <option value="Intermedio">Intermedio</option>
             <option value="Avanzado">Avanzado</option>
           </select>
+          {errors?.nivel && <span className="error-message">{errors.nivel}</span>}
         </div>
 
         <div className="input-group">
@@ -81,14 +141,15 @@ function SkillForm({ skillData, setSkillData }) {
             onChange={handleChange}
             placeholder="Describe your experience...">
           </textarea>
+          {errors?.descripcion && <span className="error-message">{errors.descripcion}</span>}
         </div>
 
         <div className="skill-actions">
-          <button type="button" className="btn-upload">
+          <button type="button" className="btn-upload" onClick={onAdd}>
             <i className="fa-solid fa-plus"></i>
             Add Skill
           </button>
-          <button type="button" className="btn-upload">
+          <button type="button" className="btn-upload" onClick={onClear}>
             <i className="fa-solid fa-eraser"></i>
             Clear
           </button>

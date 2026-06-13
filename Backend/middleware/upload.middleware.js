@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
     if (isValid) {
         cb(null, true);
     } else {
-        cb(new Error("Formato no permitido"));
+        cb(new Error("Format not allowed"));
     }
 };
 

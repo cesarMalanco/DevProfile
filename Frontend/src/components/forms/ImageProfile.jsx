@@ -14,7 +14,7 @@ function ImageProfile() {
 
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("El archivo no es una imagen válida");
+        setError("The file is not a valid image");
         return;
       }
 
@@ -37,7 +37,7 @@ function ImageProfile() {
     setPreview(url);
 
     if (!validateImageURL(url)) {
-      setError("URL de imagen inválida");
+      setError("Invalid image URL");
       return;
     }
 

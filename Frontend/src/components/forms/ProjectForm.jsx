@@ -1,10 +1,15 @@
 import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
+import AccordionItem from "../Accordion";
 
-function ProjectForm({ projectData, setProjectData }) {
+function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, onClear, onUpdate, errors = {} }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProjectData({...projectData,[name]: value});
+    setProjectData({ ...projectData, [name]: value });
+  };
+
+  const handleListChange = (index, name, value) => {
+    onUpdate(index, name, value);
   };
 
   return (
@@ -20,6 +25,63 @@ function ProjectForm({ projectData, setProjectData }) {
             </div>
           </div>
 
+          {projectsList.length > 0 && (
+            <div className="accordion-group">
+              {projectsList.map((project, index) => (
+                <AccordionItem
+                  key={index}
+                  title={`${project.nombre || "Project"}${project.tecnologias ? ` - ${project.tecnologias}` : ""}`}
+                  icon="fa-solid fa-folder-open"
+                >
+                  <div className="form-grid">
+                    <div className="input-group">
+                      <label>Project Name</label>
+                      <input
+                        type="text"
+                        value={project.nombre}
+                        onChange={(e) => handleListChange(index, "nombre", e.target.value)}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label>Technologies</label>
+                      <input
+                        type="text"
+                        value={project.tecnologias}
+                        onChange={(e) => handleListChange(index, "tecnologias", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="input-group">
+                    <label>Description</label>
+                    <textarea
+                      rows="4"
+                      value={project.descripcion}
+                      onChange={(e) => handleListChange(index, "descripcion", e.target.value)}
+                    />
+                  </div>
+                  <div className="form-grid">
+                    <div className="input-group">
+                      <label>Repository</label>
+                      <input
+                        type="url"
+                        value={project.repositorio}
+                        onChange={(e) => handleListChange(index, "repositorio", e.target.value)}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label>Live Demo</label>
+                      <input
+                        type="url"
+                        value={project.deploy}
+                        onChange={(e) => handleListChange(index, "deploy", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </AccordionItem>
+              ))}
+            </div>
+          )}
+
           <div className="form-grid">
             <div className="input-group">
               <label>
@@ -33,6 +95,7 @@ function ProjectForm({ projectData, setProjectData }) {
                 onChange={handleChange}
                 placeholder="Task Manager App"
               />
+              {errors?.nombre && <span className="error-message">{errors.nombre}</span>}
             </div>
 
             <div className="input-group">
@@ -47,6 +110,7 @@ function ProjectForm({ projectData, setProjectData }) {
                 onChange={handleChange}
                 placeholder="React, Node.js, MySQL"
               />
+              {errors?.tecnologias && <span className="error-message">{errors.tecnologias}</span>}
             </div>
           </div>
 
@@ -62,6 +126,7 @@ function ProjectForm({ projectData, setProjectData }) {
               onChange={handleChange}
               placeholder="Describe your project, goals and achievements..."
             ></textarea>
+            {errors?.descripcion && <span className="error-message">{errors.descripcion}</span>}
           </div>
 
           <div className="form-grid">
@@ -77,9 +142,10 @@ function ProjectForm({ projectData, setProjectData }) {
                 onChange={handleChange}
                 placeholder="https://github.com/user/project"
               />
+              {errors?.repositorio && <span className="error-message">{errors.repositorio}</span>}
             </div>
 
-          <div className="input-group">
+            <div className="input-group">
               <label>
                 <i className="fa-solid fa-globe"></i>
                 Live Demo
@@ -91,6 +157,7 @@ function ProjectForm({ projectData, setProjectData }) {
                 onChange={handleChange}
                 placeholder="https://project.com"
               />
+              {errors?.deploy && <span className="error-message">{errors.deploy}</span>}
             </div>
           </div>
 
@@ -128,13 +195,13 @@ function ProjectForm({ projectData, setProjectData }) {
             </div>
 
           <div className="skill-actions">
-            <button type="button" className="btn-upload">
-              <i className="fa-solid fa-eraser"></i>
-              Clear
-            </button>
-            <button type="button" className="btn-upload">
+            <button type="button" className="btn-upload" onClick={onAdd}>
               <i className="fa-solid fa-plus"></i>
               Add Project
+            </button>
+            <button type="button" className="btn-upload" onClick={onClear}>
+              <i className="fa-solid fa-eraser"></i>
+              Clear
             </button>
           </div>
         </div>

@@ -144,6 +144,10 @@
 
 }
 
+.accordion-group {
+    margin-bottom: 1.25rem;
+}
+
 .section-header-forms {
     display: flex;
     align-items: center;

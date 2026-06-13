@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 import { loginUser, registerUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +30,11 @@ function Login() {
                 });
                 
                 if (!data.token) {
-                    alert(data.message);
+                    await Swal.fire({
+                        icon: "error",
+                        title: "Login failed",
+                        text: data.message
+                    });
                     return;
                 }
                 authLogin(data.usuario, data.token);
@@ -37,7 +42,11 @@ function Login() {
 
             } else {
                 const data = await registerUser(formData);
-                alert(data.message);
+                await Swal.fire({
+                    icon: "success",
+                    title: "Registration complete",
+                    text: data.message
+                });
                 setIsLogin(true);
             }
         } catch (error) {

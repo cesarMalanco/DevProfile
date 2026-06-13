@@ -1,4 +1,5 @@
 import "../styles/DashboardStyles.css";
+import Swal from "sweetalert2";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -52,9 +53,18 @@ function Dashboard() {
 
     const handleEditCv = async (cv) => {
         const currentName = cv.nombre_cv || `CV ${cv.id_cv}`;
-        const newName = window.prompt("Edit CV name", currentName);
+        const result = await Swal.fire({
+            title: "Edit CV name",
+            input: "text",
+            inputValue: currentName,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Cancel",
+            inputPlaceholder: "Enter a new CV name"
+        });
 
-        if (!newName || newName.trim() === "") return;
+        const newName = result.value;
+        if (!result.isConfirmed || !newName || newName.trim() === "") return;
 
         try {
             await updateCv(cv.id_cv, { nombre_cv: newName.trim() });
@@ -62,14 +72,25 @@ function Dashboard() {
             await fetchStats();
         } catch (error) {
             console.error(error);
-            window.alert("Error al actualizar el CV.");
+            await Swal.fire({
+                icon: "error",
+                title: "Update failed",
+                text: "Error updating CV."
+            });
         }
     };
 
     const handleDeleteCv = async (cv) => {
-        const confirmDelete = window.confirm(`Delete CV '${cv.nombre_cv || `CV ${cv.id_cv}`}'?`);
+        const result = await Swal.fire({
+            icon: "warning",
+            title: "Delete CV?",
+            text: `Delete CV '${cv.nombre_cv || `CV ${cv.id_cv}`}'?`,
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel"
+        });
 
-        if (!confirmDelete) return;
+        if (!result.isConfirmed) return;
 
         try {
             await deleteCv(cv.id_cv);
@@ -78,7 +99,11 @@ function Dashboard() {
             try { fetchSkills && await fetchSkills(); } catch (e) { console.error(e); }
         } catch (error) {
             console.error(error);
-            window.alert("Error al eliminar el CV.");
+            await Swal.fire({
+                icon: "error",
+                title: "Delete failed",
+                text: "Error deleting CV."
+            });
         }
     };
 
