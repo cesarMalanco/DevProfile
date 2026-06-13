@@ -8,7 +8,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createProfile } from "../services/profileService";
 import { createCv, getCvById, updateCv } from "../services/cvService";
-import { createSkill } from "../services/skillService";
+import { useContext } from "react";
+import { CVContext } from "../context/CVContext";
 import { createProject } from "../services/projectService";
 import { createEducation } from "../services/educationService";
 import { createLanguage } from "../services/languajeService";
@@ -20,6 +21,7 @@ import { isEmail, isURL } from "../utils/validations";
 function Editor() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addSkill } = useContext(CVContext);
   const [formData, setFormData] = useState({
     nombre_completo: "",
     profesion: "",
@@ -181,12 +183,12 @@ function Editor() {
         const cvResult = await createCv(cvPayload);
         const id_cv = cvResult.insertId;
 
-        const skillResult = await createSkill({
-          ...skillData,
-          id_usuario: user.id_usuario,
-          id_perfil: id_perfil,
-          id_cv
-        });
+            const skillResult = await addSkill({
+              ...skillData,
+              id_usuario: user.id_usuario,
+              id_perfil: id_perfil,
+              id_cv
+            });
 
         const projectForm = new FormData();
         projectForm.append("id_usuario", user.id_usuario);

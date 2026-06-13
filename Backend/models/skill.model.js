@@ -37,6 +37,34 @@ const createSkill = async (skillData) => {
     return result;
 };
 
+const getSkillsByUser = async (userId) => {
+    const [rows] = await pool.query(
+        `SELECT * FROM habilidades WHERE id_usuario = ? ORDER BY id_habilidad DESC`,
+        [userId]
+    );
+    return rows;
+};
+
+const updateSkill = async (id, data) => {
+    const { nombre, categoria, nivel, descripcion } = data;
+    const [result] = await pool.query(
+        `UPDATE habilidades SET nombre = ?, categoria = ?, nivel = ?, descripcion = ? WHERE id_habilidad = ?`,
+        [nombre, categoria, nivel, descripcion, id]
+    );
+    return result;
+};
+
+const deleteSkillById = async (id) => {
+    const [result] = await pool.query(
+        `DELETE FROM habilidades WHERE id_habilidad = ?`,
+        [id]
+    );
+    return result;
+};
+
 module.exports = {
-    createSkill
+    createSkill,
+    getSkillsByUser,
+    updateSkill,
+    deleteSkillById
 };

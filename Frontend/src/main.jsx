@@ -3,15 +3,18 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { CVProvider } from "./context/CVContext";
 
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
-    <ThemeProvider>
+    <CVProvider>
+      <ThemeProvider>
         <BrowserRouter>
-            <App />
+          <App />
         </BrowserRouter>
-    </ThemeProvider>
+      </ThemeProvider>
+    </CVProvider>
   </AuthProvider>
 );

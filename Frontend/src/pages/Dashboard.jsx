@@ -1,13 +1,16 @@
 import "../styles/DashboardStyles.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProfileStats } from "../services/dashboardService";
 import { getUserCvs, updateCv, deleteCv } from "../services/cvService";
+import SkillsChart from "../components/SkillsChart";
+import { CVContext } from "../context/CVContext";
 
 function Dashboard() {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { fetchSkills, skills } = useContext(CVContext);
     const userName = user?.nombre || "guest";
     const [stats, setStats] = useState({ cvs: 0, skills: 0, projects: 0, education: 0, languages: 0 });
     const [cvs, setCvs] = useState([]);
@@ -72,6 +75,7 @@ function Dashboard() {
             await deleteCv(cv.id_cv);
             await fetchCvs();
             await fetchStats();
+            try { fetchSkills && await fetchSkills(); } catch (e) { console.error(e); }
         } catch (error) {
             console.error(error);
             window.alert("Error al eliminar el CV.");
@@ -164,13 +168,17 @@ function Dashboard() {
                             <button className="card-link" onClick={() => navigate("/cvs")}>View all</button>
                         </div>
 
-                        <div className="empty-state">
-                            <div className="empty-icon">
-                                <i className="fa-solid fa-user-astronaut"></i>
+                        {(!loading && skills && skills.length > 0) ? (
+                            <SkillsChart />
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-icon">
+                                    <i className="fa-solid fa-user-astronaut"></i>
+                                </div>
+                                <h4>Select a CV</h4>
+                                <p>Create your first professional profile to see your statistics</p>
                             </div>
-                            <h4>Select a CV</h4>
-                            <p>Create your first professional profile to see your statistics</p>
-                        </div>
+                        )}
                     </div>
 
                     {/* QUICK ACTIONS */}
