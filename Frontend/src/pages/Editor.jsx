@@ -7,6 +7,7 @@ import LanguageForm from "../components/forms/LanguageForm";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createProfile } from "../services/profileService";
+import { createCv, getCvById, updateCv } from "../services/cvService";
 import { createSkill } from "../services/skillService";
 import { createProject } from "../services/projectService";
 import { createEducation } from "../services/educationService";
@@ -63,6 +64,15 @@ function Editor() {
   const [foto, setFoto] = useState(null);
 
   const [errors, setErrors] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingCvId, setEditingCvId] = useState(null);
+
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } catch (e) {
+    }
+  }, []);
 
   const validatePersonalForm = () => {
     const newErrors = {};
@@ -153,27 +163,62 @@ function Editor() {
       const profileResult = await createProfile(data);
       const id_perfil = profileResult.insertId;
 
-      const skillResult = await createSkill({ ...skillData, id_usuario: user.id_usuario, id_perfil: id_perfil });
+      if (isEditing && editingCvId) {
+        const newName = formData.nombre_completo
+          ? `${formData.nombre_completo} CV`
+          : `${user.nombre} CV`;
 
-      const projectForm = new FormData();
-      projectForm.append("id_usuario", user.id_usuario);
-      projectForm.append("id_perfil", id_perfil);
+        await updateCv(editingCvId, { nombre_cv: newName });
+      } else {
+        const cvPayload = {
+          id_usuario: user.id_usuario,
+          id_plantilla: null,
+          nombre_cv: formData.nombre_completo
+            ? `${formData.nombre_completo} CV`
+            : `${user.nombre} CV`
+        };
 
-      projectForm.append("nombre", projectData.nombre);
-      projectForm.append("descripcion", projectData.descripcion);
-      projectForm.append("tecnologias", projectData.tecnologias);
-      projectForm.append("repositorio", projectData.repositorio);
-      projectForm.append("deploy", projectData.deploy);
+        const cvResult = await createCv(cvPayload);
+        const id_cv = cvResult.insertId;
 
-      if (projectData.imagen) {
-        projectForm.append("Foto_proyecto", projectData.imagen);
+        const skillResult = await createSkill({
+          ...skillData,
+          id_usuario: user.id_usuario,
+          id_perfil: id_perfil,
+          id_cv
+        });
+
+        const projectForm = new FormData();
+        projectForm.append("id_usuario", user.id_usuario);
+        projectForm.append("id_perfil", id_perfil);
+        projectForm.append("id_cv", id_cv);
+
+        projectForm.append("nombre", projectData.nombre);
+        projectForm.append("descripcion", projectData.descripcion);
+        projectForm.append("tecnologias", projectData.tecnologias);
+        projectForm.append("repositorio", projectData.repositorio);
+        projectForm.append("deploy", projectData.deploy);
+
+        if (projectData.imagen) {
+          projectForm.append("Foto_proyecto", projectData.imagen);
+        }
+
+        const projectResult = await createProject(projectForm);
+
+        const educationResult = await createEducation({
+          ...educationData,
+          id_usuario: user.id_usuario,
+          id_perfil: id_perfil,
+          id_cv
+        });
+
+        const languageResult = await createLanguage({
+          ...languageData,
+          id_usuario: user.id_usuario,
+          id_perfil: id_perfil,
+          id_cv
+        });
       }
-
-      const projectResult = await createProject(projectForm);
-
-      const educationResult = await createEducation({ ...educationData, id_usuario: user.id_usuario, id_perfil: id_perfil });
-
-      const languageResult = await createLanguage({ ...languageData, id_usuario: user.id_usuario, id_perfil: id_perfil });
 
       localStorage.removeItem("formData");
       localStorage.removeItem("skillData");
@@ -201,6 +246,36 @@ function Editor() {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cvId = params.get("cvId");
+
+    if (!cvId) {
+      localStorage.removeItem("formData");
+      localStorage.removeItem("skillData");
+      localStorage.removeItem("projectData");
+      localStorage.removeItem("educationData");
+      localStorage.removeItem("languageData");
+
+      setFormData({
+        nombre_completo: "",
+        profesion: "",
+        ciudad: "",
+        correo: "",
+        telefono: "",
+        descripcion: "",
+        github: "",
+        linkedin: "",
+        portafolio: ""
+      });
+
+      setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
+      setProjectData({ nombre: "", descripcion: "", tecnologias: "", repositorio: "", deploy: "", imagen: null });
+      setEducationData({ institucion: "", programa: "", periodo: "", descripcion: "", evidencia: "" });
+      setLanguageData({ idioma: "", nivel: "", descripcion: "" });
+
+      return;
+    }
+
     const savedFormData = localStorage.getItem("formData");
     const savedSkillData = localStorage.getItem("skillData");
     const savedProjectData = localStorage.getItem("projectData");
@@ -213,18 +288,93 @@ function Editor() {
     if (savedEducationData) setEducationData(JSON.parse(savedEducationData));
     if (savedLanguageData) setLanguageData(JSON.parse(savedLanguageData));
   }, []);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cvId = params.get("cvId");
+
+    if (!cvId) return;
+
+    const loadCv = async () => {
+      try {
+        const data = await getCvById(cvId);
+        if (!data) return;
+
+        setIsEditing(true);
+        setEditingCvId(cvId);
+
+        if (data.profile) {
+          setFormData({
+            nombre_completo: data.profile.nombre_completo || "",
+            profesion: data.profile.profesion || "",
+            ciudad: data.profile.ciudad || "",
+            correo: data.profile.correo || "",
+            telefono: data.profile.telefono || "",
+            descripcion: data.profile.descripcion || "",
+            github: data.profile.github || "",
+            linkedin: data.profile.linkedin || "",
+            portafolio: data.profile.portafolio || ""
+          });
+        }
+
+        if (data.skills && data.skills.length > 0) {
+          const s = data.skills[0];
+          setSkillData({
+            nombre: s.nombre || "",
+            categoria: s.categoria || "",
+            nivel: s.nivel || "",
+            descripcion: s.descripcion || ""
+          });
+        }
+
+        if (data.projects && data.projects.length > 0) {
+          const p = data.projects[0];
+          setProjectData({
+            nombre: p.nombre || "",
+            descripcion: p.descripcion || "",
+            tecnologias: p.tecnologias || "",
+            repositorio: p.repositorio || "",
+            deploy: p.deploy || "",
+            imagen: null
+        });
+        }
+
+        if (data.education && data.education.length > 0) {
+          const e = data.education[0];
+          setEducationData({
+            institucion: e.institucion || "",
+            programa: e.programa || "",
+            periodo: e.periodo || "",
+            descripcion: e.descripcion || "",
+            evidencia: e.evidencia || ""
+          });
+        }
+
+        if (data.languages && data.languages.length > 0) {
+          const l = data.languages[0];
+          setLanguageData({
+            idioma: l.idioma || "",
+            nivel: l.nivel || "",
+            descripcion: l.descripcion || ""
+          });
+        }
+
+      } catch (error) {
+        console.error("Error loading CV:", error);
+      }
+    };
+
+    loadCv();
+  }, []);
   useEffect(() => {
     localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
-
   useEffect(() => {
     localStorage.setItem("skillData", JSON.stringify(skillData));
   }, [skillData]);
-
   useEffect(() => {
     localStorage.setItem("educationData", JSON.stringify(educationData));
   }, [educationData]);
-
   useEffect(() => {
     localStorage.setItem("languageData", JSON.stringify(languageData));
   }, [languageData]);

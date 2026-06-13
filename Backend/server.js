@@ -6,6 +6,7 @@ const app = express();
 const path = require("path");
 const authRoutes = require("./routes/auth.routes");
 const profileRoutes = require("./routes/profile.routes");
+const cvRoutes = require("./routes/cv.routes");
 const skillRoutes = require("./routes/skill.routes");
 const projectRoutes = require("./routes/project.routes");
 const educationRoutes = require("./routes/education.routes");
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.use("/uploads",express.static(path.join(__dirname, "uploads")));
 app.use("/api/profile",profileRoutes);
+app.use("/api/cvs", cvRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/education", educationRoutes);

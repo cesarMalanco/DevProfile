@@ -6,7 +6,8 @@ const createLanguage = async (data) => {
         id_usuario,
         idioma,
         nivel,
-        descripcion
+        descripcion,
+        id_cv
     } = data;
 
     const [result] = await pool.query(
@@ -15,14 +16,16 @@ const createLanguage = async (data) => {
         id_usuario,
         idioma,
         nivel,
-        descripcion
-    ) VALUES (?, ?, ?, ?, ?)`,
+        descripcion,
+        id_cv
+    ) VALUES (?, ?, ?, ?, ?, ?)`,
         [
             id_perfil,
             id_usuario,
             idioma,
             nivel,
-            descripcion
+            descripcion,
+            id_cv || null
         ]
     );
 

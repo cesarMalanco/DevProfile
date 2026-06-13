@@ -4,6 +4,7 @@ const createEducation = async (data) => {
     const {
         id_perfil,
         id_usuario,
+        id_cv,
         institucion,
         programa,
         periodo,
@@ -30,7 +31,7 @@ const createEducation = async (data) => {
             periodo,
             descripcion,
             evidencia,
-            null
+            id_cv || null
         ]
     );
 

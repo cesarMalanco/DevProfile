@@ -1,6 +1,83 @@
 import "../styles/DashboardStyles.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { getProfileStats } from "../services/dashboardService";
+import { getUserCvs, updateCv, deleteCv } from "../services/cvService";
 
 function Dashboard() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const userName = user?.nombre || "guest";
+    const [stats, setStats] = useState({ cvs: 0, skills: 0, projects: 0, education: 0, languages: 0 });
+    const [cvs, setCvs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchCvs = async () => {
+        try {
+            const cvsData = await getUserCvs(user.id_usuario);
+            setCvs(cvsData);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchStats = async () => {
+        try {
+            const statsData = await getProfileStats(user.id_usuario);
+            setStats(statsData);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (!user?.id_usuario) return;
+
+        const fetchData = async () => {
+            try {
+                await Promise.all([fetchStats(), fetchCvs()]);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [user]);
+
+    const handleEditCv = async (cv) => {
+        const currentName = cv.nombre_cv || `CV ${cv.id_cv}`;
+        const newName = window.prompt("Edit CV name", currentName);
+
+        if (!newName || newName.trim() === "") return;
+
+        try {
+            await updateCv(cv.id_cv, { nombre_cv: newName.trim() });
+            await fetchCvs();
+            await fetchStats();
+        } catch (error) {
+            console.error(error);
+            window.alert("Error al actualizar el CV.");
+        }
+    };
+
+    const handleDeleteCv = async (cv) => {
+        const confirmDelete = window.confirm(`Delete CV '${cv.nombre_cv || `CV ${cv.id_cv}`}'?`);
+
+        if (!confirmDelete) return;
+
+        try {
+            await deleteCv(cv.id_cv);
+            await fetchCvs();
+            await fetchStats();
+        } catch (error) {
+            console.error(error);
+            window.alert("Error al eliminar el CV.");
+        }
+    };
+
     return (
         <section className="dashboard-section">
             <div className="dashboard-container">
@@ -9,12 +86,12 @@ function Dashboard() {
                 <div className="dashboard-header">
                     <div className="header-content">
                         <div className="header-title">
-                            <h1>Welcome back <span className="highlight-title">username!</span></h1>
+                            <h1>Welcome back <span className="highlight-title">{userName}!</span></h1>
                             <p>Manage your profiles and track your progress</p>
                         </div>
                     </div>
                     <div className="header-actions">
-                        <button className="cta-btn-primary">
+                        <button className="cta-btn-primary" onClick={() => navigate("/editor") }>
                             <i className="fa-solid fa-plus"></i>
                             Create New CV
                         </button>
@@ -28,7 +105,7 @@ function Dashboard() {
                             <i className="fa-solid fa-file-lines"></i>
                         </div>
                         <div className="stat-info">
-                            <h2>0</h2>
+                            <h2>{loading ? "..." : stats.cvs}</h2>
                             <p>CVs Created</p>
                         </div>
                     </div>
@@ -38,7 +115,7 @@ function Dashboard() {
                             <i className="fa-solid fa-code"></i>
                         </div>
                         <div className="stat-info">
-                            <h2>0</h2>
+                            <h2>{loading ? "..." : stats.skills}</h2>
                             <p>Skills</p>
                         </div>
                     </div>
@@ -48,7 +125,7 @@ function Dashboard() {
                             <i className="fa-solid fa-folder-open"></i>
                         </div>
                         <div className="stat-info">
-                            <h2>0</h2>
+                            <h2>{loading ? "..." : stats.projects}</h2>
                             <p>Projects</p>
                         </div>
                     </div>
@@ -58,8 +135,18 @@ function Dashboard() {
                             <i className="fa-solid fa-graduation-cap"></i>
                         </div>
                         <div className="stat-info">
-                            <h2>0</h2>
+                            <h2>{loading ? "..." : stats.education}</h2>
                             <p>Education</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card">
+                        <div className="stat-icon teal">
+                            <i className="fa-solid fa-language"></i>
+                        </div>
+                        <div className="stat-info">
+                            <h2>{loading ? "..." : stats.languages}</h2>
+                            <p>Languages</p>
                         </div>
                     </div>
                 </div>
@@ -74,7 +161,7 @@ function Dashboard() {
                                 <i className="fa-solid fa-chart-pie"></i>
                                 <h3>My Graph</h3>
                             </div>
-                            <button className="card-link">View all</button>
+                            <button className="card-link" onClick={() => navigate("/cvs")}>View all</button>
                         </div>
 
                         <div className="empty-state">
@@ -82,7 +169,7 @@ function Dashboard() {
                                 <i className="fa-solid fa-user-astronaut"></i>
                             </div>
                             <h4>Select a CV</h4>
-                            <p>Create your first professional profile to see your stadistics</p>
+                            <p>Create your first professional profile to see your statistics</p>
                         </div>
                     </div>
 
@@ -96,13 +183,13 @@ function Dashboard() {
                         </div>
 
                         <div className="actions-grid">
-                            <button className="action-btn primary">
+                            <button className="action-btn primary" onClick={() => navigate("/editor") }>
                                 <i className="fa-solid fa-plus"></i>
                                 New CV
                                 <span className="btn-shortcut">⌘N</span>
                             </button>
 
-                            <button className="action-btn secondary">
+                            <button className="action-btn secondary" onClick={() => navigate("/preview") }>
                                 <i className="fa-solid fa-eye"></i>
                                 Preview
                                 <span className="btn-shortcut">⌘P</span>
@@ -126,11 +213,52 @@ function Dashboard() {
                                 <h3>My CV's</h3>
                             </div>
                         </div>
-                        <div className="activity-empty">
-                            <i className="fa-solid fa-inbox"></i>
-                            <p>You don't have cv's yet</p>
-                            <span>Start creating your CV to see them here</span>
-                        </div>
+                        {loading ? (
+                            <div className="activity-empty">
+                                <i className="fa-solid fa-spinner fa-spin"></i>
+                                <p>Loading your CVs...</p>
+                            </div>
+                        ) : cvs.length > 0 ? (
+                            <div className="cv-list">
+                                {cvs.map((cv) => (
+                                    <div key={cv.id_cv} className="cv-item">
+                                        <div>
+                                            <h4>{`${cv.nombre_cv || `CV ${cv.id_cv}`} · #${cv.id_cv}`}</h4>
+                                            <p>{new Date(cv.fecha_creacion).toLocaleDateString()}</p>
+                                        </div>
+                                        <div className="cv-item-actions">
+                                            <button
+                                                type="button"
+                                                className="cv-action-btn open"
+                                                onClick={() => navigate(`/preview?cvId=${cv.id_cv}`)}
+                                            >
+                                                Open
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="cv-action-btn edit"
+                                                onClick={() => navigate(`/editor?cvId=${cv.id_cv}`)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="cv-action-btn delete"
+                                                onClick={() => handleDeleteCv(cv)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="activity-empty">
+                                <i className="fa-solid fa-inbox"></i>
+                                <p>You don't have cv's yet</p>
+                                <span>Start creating your CV to see them here</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
