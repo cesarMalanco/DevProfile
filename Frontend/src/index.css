@@ -24,10 +24,14 @@ body {
 }
 
 body.dark-mode {
-    --lm-white: #121212;
-    --lm-white2: #1a1a1a;
-    --lm-white3: #242424;
+    --dm-darkblue: #011933;
+    --dm-navy: #172548;
+    --dm-blue: #4B5A83;
+    --dm-beige: #A59281;
+    --dm-lightbeige: #E9E4DE;
+    --dm-gold: #E0C08F;
+    --dm-white: #F1E9DC;
 
-    --lm-text: #f5f5f5;
+    background-color: var(--dm-navy);
 }
 

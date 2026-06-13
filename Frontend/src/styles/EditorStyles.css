@@ -3,6 +3,9 @@
     background: linear-gradient(135deg, var(--lm-white) 0%, var(--lm-white3) 100%);
     padding: 2rem;
 }
+body.dark-mode .editor-section {
+    background: linear-gradient(180deg, var(--dm-darkblue) 0%, var(--dm-navy) 100%);
+}
 
 .form-card {
     max-width: 1100px;
@@ -12,6 +15,9 @@
     box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     animation: fadeInUp 0.5s ease;
+}
+body.dark-mode .form-card {
+    background: rgba(104, 124, 179, 0.399);
 }
 
 @keyframes fadeInUp {
@@ -40,9 +46,15 @@
     line-height: 1.4;
     color: var(--lm-text);
 }
+body.dark-mode .section-title {
+    color: var(--dm-lightbeige);
+}
 
 .highlight-title{
     color: var(--lm-accent);
+}
+body.dark-mode .highlight-title {
+    color: var(--dm-gold);
 }
 
 /* PHOTO SECTION */
@@ -69,6 +81,10 @@
     font-size: 2.5rem;
     color: white;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+body.dark-mode .avatar-placeholder {
+    color: var(--dm-lightbeige);
+    background: linear-gradient(135deg, var(--dm-beige), var(--dm-gold));
 }
 
 .btn-edit-photo {
@@ -97,11 +113,17 @@
     color: var(--lm-text);
     margin-bottom: 0.25rem;
 }
+body.dark-mode .photo-info h4 {
+    color: var(--dm-gold);
+}
 
 .photo-info p {
     font-size: 0.85rem;
     color: var(--lm-blue);
     margin-bottom: 0.75rem;
+}
+body.dark-mode .photo-info p {
+    color: var(--dm-lightbeige);
 }
 
 .photo-actions {
@@ -121,6 +143,10 @@
     cursor: pointer;
     transition: .3s;
 }
+body.dark-mode .btn-upload {
+    color: var(--dm-lightbeige);
+    border: 2px solid var(--dm-lightbeige);
+}
 
 .btn-upload  i{
     margin-right: 0.3rem;
@@ -131,10 +157,16 @@
     color: var(--lm-accent);
     background: var(--lm-white);
 }
+body.dark-mode .btn-upload:hover {
+    color: var(--dm-navy);
+}
 
 .file-hint {
     font-size: 0.75rem;
     color: var(--lm-blue);
+}
+body.dark-mode .file-hint {
+    color: var(--dm-lightbeige);
 }
 
 .form-section {
@@ -175,10 +207,17 @@
     color: var(--lm-text);
     margin-bottom: 0.5rem;
 }
+body.dark-mode .btn-upload {
+    color: var(--dm-lightbeige);
+    border: 2px solid var(--dm-lightbeige);
+}
 
 .section-header-forms p {
     font-size: 0.85rem;
     color: var(--lm-blue);
+}
+body.dark-mode .section-header-forms p{
+    color: var(--dm-lightbeige);
 }
 
 
@@ -203,6 +242,9 @@
     align-items: center;
     gap: 0.5rem;
 }
+body.dark-mode .input-group label {
+    color: var(--dm-lightbeige);
+}
 
 .input-group label i {
     color: var(--lm-accent);
@@ -220,13 +262,24 @@
     font-family: 'Poppins', sans-serif;
     background: white;
 }
+body.dark-mode .input-group input,
+body.dark-mode .input-group textarea,
+body.dark-mode .input-group select{
+    color: var(--dm-lightbeige);
+    background: rgba(2, 15, 77, 0.226);
+}
+body.dark-mode .input-group input::placeholder,
+body.dark-mode .input-group select::placeholder,
+body.dark-mode .input-group textarea::placeholder{
+    color: var(--dm-lightbeige);
+}
 
 .input-group input:focus,
 .input-group textarea:focus,
 .input-group selec:focus {
     outline: none;
     border-color: var(--lm-accent);
-    box-shadow: 0 0 0 3px rgba(205, 160, 118, 0.1);
+    box-shadow: 0 0 0 3px rgba(205, 160, 118, 0.3);
 }
 
 .input-group textarea {
@@ -238,6 +291,9 @@
     font-size: 0.7rem;
     color: var(--lm-blue);
     margin-top: 0.25rem;
+}
+body.dark-mode .input-hint{
+    color: var(--dm-gold);
 }
 
 .full-width {
@@ -251,6 +307,9 @@
     padding: 1.5rem 2.5rem 2.5rem;
     background: var(--lm-white2);
 }
+body.dark-mode .form-actions{
+    background: var(--dm-blue);
+}
 
 .skill-actions {
     display: flex;
@@ -260,6 +319,10 @@
 
 .input-group select {
     appearance: none;
+}
+body.dark-mode .input-group select option{
+    background: var(--dm-navy);
+    color: var(--dm-gold);
 }
 .error-message {
     display: block;

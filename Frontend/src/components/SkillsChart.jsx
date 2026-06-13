@@ -1,5 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import { Bar } from "react-chartjs-2";
+import { useTheme } from "../context/ThemeContext";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,13 +17,35 @@ const levelMap = { Basico: 1, Intermedio: 2, Avanzado: 3 };
 
 export default function SkillsChart() {
   const { skills } = useContext(CVContext);
-
+  const { darkMode } = useTheme();
   const labels = useMemo(() => skills.map((s) => s.nombre || "-"), [skills]);
   const values = useMemo(() => skills.map((s) => levelMap[s.nivel] || 0), [skills]);
+  const themeColors = {
+    bar: darkMode ? "#ebd488" : "#467db8",
+    barBorder: darkMode ? "#baa560" : "#377ac5",
+    barHover: darkMode ? "#d4af37" : "#95b0ce",
 
+    text: darkMode ? "#e5d8ce" : "#021d43",
+    grid: darkMode
+      ? "rgba(232, 221, 184, 0.15)"
+      : "rgba(172, 200, 240, 0.12)",
+
+    tooltipBg: darkMode
+      ? "#6e74a1"
+      : "rgba(15, 23, 42, 0.92)",
+
+    tooltipTitle: darkMode
+      ? "#F2EEEB"
+      : "#f8fafc",
+
+    tooltipBody: darkMode
+      ? "#f5f0de"
+      : "#e2e8f0",
+  };
+  
   const colors = useMemo(
-    () => labels.map(() => "rgba(30, 58, 138, 0.92)"),
-    [labels]
+    () => labels.map(() => themeColors.bar),
+    [labels, darkMode]
   );
 
   const data = useMemo(
@@ -33,16 +56,16 @@ export default function SkillsChart() {
           label: "Skill mastery",
           data: values,
           backgroundColor: colors,
-          borderColor: "rgba(30, 58, 138, 1)",
+          borderColor: themeColors.barBorder,
           borderWidth: 2,
           borderRadius: 12,
           barPercentage: 0.56,
           categoryPercentage: 0.7,
-          hoverBackgroundColor: "rgba(30, 58, 138, 0.98)",
+          hoverBackgroundColor: themeColors.barHover,
         },
       ],
     }),
-    [labels, values, colors]
+    [labels, values, colors, darkMode]
   );
 
   const options = useMemo(
@@ -52,7 +75,11 @@ export default function SkillsChart() {
       layout: { padding: 12 },
       scales: {
         x: {
-          ticks: { color: "#334155", maxRotation: 45, minRotation: 0 },
+          ticks: {
+            color: themeColors.text,
+            maxRotation: 45,
+            minRotation: 0,
+          },
           grid: { display: false },
         },
         y: {
@@ -67,18 +94,18 @@ export default function SkillsChart() {
               if (value === 3) return "Advanced";
               return value;
             },
-            color: "#334155",
+            color: themeColors.text,
           },
-          grid: { color: "rgba(148, 163, 184, 0.12)" },
+          grid: { color: themeColors.grid },
         },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           enabled: true,
-          backgroundColor: "rgba(15, 23, 42, 0.92)",
-          titleColor: "#f8fafc",
-          bodyColor: "#e2e8f0",
+          backgroundColor: themeColors.tooltipBg,
+          titleColor: themeColors.tooltipTitle,
+          bodyColor: themeColors.tooltipBody,
           padding: 12,
           boxPadding: 6,
           callbacks: {
@@ -90,7 +117,7 @@ export default function SkillsChart() {
         },
       },
     }),
-    []
+    [darkMode]
   );
 
   return (

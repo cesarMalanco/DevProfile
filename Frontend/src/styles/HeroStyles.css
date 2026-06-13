@@ -11,6 +11,13 @@
     gap: 2rem;
 }
 
+body.dark-mode .hero{
+    background-color: var(--lm-navy);
+    background-image:
+        linear-gradient(rgba(83, 159, 240, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(112, 174, 241, 0.08) 1px, transparent 1px);
+}
+
 /* === IZQUIERDA === */
 
 .hero-left {
@@ -25,6 +32,10 @@
     border-radius: 30px;
     font-weight: 600;
 }
+body.dark-mode .hero-tag{
+    background: rgba(243, 215, 144, 0.852);
+    color: var(--dm-darkblue);
+}
 
 .hero-title {
     margin-top: 1.5rem;
@@ -33,8 +44,16 @@
     color: var(--lm-text);
 }
 
+body.dark-mode .hero-title{
+    color: var(--dm-lightbeige);
+}
+
 .highlight {
     color: var(--lm-accent);
+}
+
+body.dark-mode .highlight{
+    color: var(--dm-gold)
 }
 
 .hero-description {
@@ -44,6 +63,8 @@
     line-height: 1.8;
     color: var(--lm-blue);
 }
+
+body.dark-mode .hero-description{ color: var(--lm-blue);}
 
 .hero-buttons {
     display: flex;
@@ -60,6 +81,8 @@
 .hero-stats h2 {
     color: var(--lm-text);
 }
+
+body.dark-mode .hero-stats h2{ color: var(--dm-lightbeige);}
 
 .hero-stats span {
     color: var(--lm-blue);

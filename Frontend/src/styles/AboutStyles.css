@@ -4,6 +4,9 @@
     position: relative;
     overflow: hidden;
 }
+body.dark-mode .about-hero {
+    background: linear-gradient(180deg, rgba(26, 21, 101, 0.25), rgba(106, 170, 229, 0.25));
+}
 
 .about-hero-content {
     text-align: center;
@@ -15,9 +18,15 @@
     font-size: 3rem;
     color: var(--lm-text);
 }
+body.dark-mode .about-hero-content h1 {
+    color: var(--dm-lightbeige);
+}
 
 .about-hero-content h1 span {
     color: var(--lm-accent);
+}
+body.dark-mode .about-hero-content h1 span{
+    color: var(--dm-gold);
 }
 
 .about-hero-content p {
@@ -25,6 +34,9 @@
     color: var(--lm-blue);
     line-height: 1.8;
     font-size: 1.1rem;
+}
+body.dark-mode .about-hero-content p {
+    color: var(--dm-lightbeige);
 }
 
 .about-gallery {
@@ -112,21 +124,34 @@
     color: var(--lm-accent-2);
     font-weight: 600;
 }
+body.dark-mode .section-tag {
+    color: var(--dm-gold);
+    background: rgba(248, 217, 188, 0.15);
+}
 
 .what-is-content h2 {
     margin-top: 1rem;
     font-size: 3rem;
     color: var(--lm-text);
 }
+body.dark-mode .what-is-content h2 {
+    color: var(--dm-lightbeige);
+}
 
 .what-is-content h2 span {
     color: var(--lm-accent);
+}
+body.dark-mode .what-is-content h2 span {
+    color: var(--dm-gold);
 }
 
 .what-is-content p {
     margin-top: 1.5rem;
     color: var(--lm-blue);
     line-height: 1.9;
+}
+body.dark-mode .what-is-content p {
+    color: var(--dm-lightbeige);
 }
 
 .features-list {
@@ -143,6 +168,9 @@
     color: var(--lm-text);
     font-weight: 500;
 }
+body.dark-mode .feature {
+    color: var(--dm-lightbeige);
+}
 
 .feature i {
     width: 28px;
@@ -155,10 +183,17 @@
     color: var(--lm-white);
     font-size: .8rem;
 }
+body.dark-mode .feature i {
+    color: var(--dm-navy);
+    background: var(--dm-gold);
+}
 
 .mission-section {
     padding: 3rem 8%;
     position: relative;
+}
+body.dark-mode .mission-section {
+    background: var(--dm-darkblue);
 }
 
 .mission-header {
@@ -172,15 +207,24 @@
     font-size: 3rem;
     color: var(--lm-text);
 }
+body.dark-mode .mission-header h2 {
+    color: var(--dm-lightbeige);
+}
 
 .mission-header h2 span {
     color: var(--lm-accent);
+}
+body.dark-mode .mission-header h2 span{
+    color: var(--dm-gold);
 }
 
 .mission-header p {
     margin-top: 1rem;
     color: var(--lm-blue);
     line-height: 1.8;
+}
+body.dark-mode .mission-header p {
+    color: var(--dm-lightbeige);
 }
 
 .mission-container {
@@ -213,6 +257,9 @@
     z-index: 2;
     transition: .4s;
 }
+body.dark-mode .purpose-card {
+    background: var(--dm-blue);
+}
 
 .purpose-card:hover {
     transform: translateY(-10px);
@@ -225,10 +272,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-    linear-gradient(135deg,var(--lm-accent),var(--lm-accent-2));
+    background:linear-gradient(135deg,var(--lm-accent),var(--lm-accent-2));
     color: var(--lm-white2);
     font-size: 2rem;
+}
+body.dark-mode .purpose-icon {
+    background: linear-gradient(135deg, var(--dm-gold), var(--dm-beige));
 }
 
 .purpose-header {
@@ -238,15 +287,20 @@
     margin-bottom: 1.5rem;
 }
 
-
 .purpose-card h3 {
     color: var(--lm-text);
     font-size: 1.5rem;
+}
+body.dark-mode .purpose-card h3 {
+    color: var(--dm-lightbeige);
 }
 
 .purpose-card p {
     color: var(--lm-blue);
     line-height: 1.8;
+}
+body.dark-mode .purpose-card p {
+    color: var(--dm-lightbeige);
 }
 
 .purpose-center {
@@ -270,16 +324,19 @@
     box-shadow:
         0 20px 40px rgba(253,95,56,.25);
 }
+body.dark-mode .center-circle {
+    background: linear-gradient(135deg, var(--dm-gold), var(--dm-beige));
+}
 
 
 .team-section {
     padding: 4rem 8%;
     background:
-    linear-gradient(
-        180deg,
-        white,
-        rgba(242,238,235,.6)
+    linear-gradient(180deg,white, rgba(242,238,235,.6)
     );
+}
+body.dark-mode .team-section {
+    background: linear-gradient(180deg, var(--dm-blue), var(--dm-navy));
 }
 
 .team-header {
@@ -293,15 +350,24 @@
     font-size: 3rem;
     color: var(--lm-text);
 }
+body.dark-mode .team-header h2 {
+    color: var(--dm-lightbeige);
+}
 
 .team-header h2 span {
     color: var(--lm-accent);
+}
+body.dark-mode .team-header h2 span{
+    color: var(--dm-gold);
 }
 
 .team-header p {
     margin-top: 1rem;
     color: var(--lm-blue);
     line-height: 1.8;
+}
+body.dark-mode .team-header p {
+    color: var(--dm-lightbeige);
 }
 
 .team-grid {
@@ -320,10 +386,16 @@
     box-shadow:0 20px 40px rgba(0,0,0,.08);
     transition: .4s;
 }
+body.dark-mode .team-card {
+    background: var(--dm-blue);
+}
 
 .team-card:hover {
     transform: translateY(-10px);
     box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+body.dark-mode .team-card:hover {
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
 }
 
 .member-avatar {
@@ -338,10 +410,16 @@
     color: white;
     font-size: 2rem;
 }
+body.dark-mode .member-avatar {
+    background: linear-gradient(135deg, var(--dm-gold), var(--dm-beige));
+}
 
 .team-card h3 {
     margin-top: 1.5rem;
     color: var(--lm-text);
+}
+body.dark-mode .team-card h3{
+    color: var(--dm-lightbeige);
 }
 
 .team-card span {
@@ -350,10 +428,16 @@
     color: var(--lm-accent-2);
     font-weight: 600;
 }
+body.dark-mode .team-card span {
+    color: var(--dm-gold);
+}
 
 .team-card p {
     margin-top: 1rem;
     color: var(--lm-blue);
     line-height: 1.7;
     font-size: .95rem;
+}
+body.dark-mode .team-card p {
+    color: var(--dm-lightbeige);
 }

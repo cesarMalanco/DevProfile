@@ -26,12 +26,6 @@ function Navbar() {
                 </div>
 
                 <div className="top-right user-section">
-                    <button
-                        className="theme-btn"
-                        onClick={toggleTheme}
-                    >
-                        {darkMode ? "☀️ Light" : "🌙 Dark"}
-                    </button>
                     {user ? (
                         <>
                             <span className="user-badge">
@@ -49,7 +43,12 @@ function Navbar() {
                             Iniciar Sesión
                         </button>
                     )}
-
+                    <button
+                        className="theme-btn"
+                        onClick={toggleTheme}
+                        aria-label="Cambiar tema claro/oscuro"
+                    >
+                    </button>
                 </div>
             </div>
 

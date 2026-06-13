@@ -6,6 +6,10 @@
     background: linear-gradient(135deg, var(--lm-white) 0%, var(--lm-white3) 100%);
     padding: 2rem;
 }
+body.dark-mode .auth-container {
+    color: var(--dm-navy);
+    background: linear-gradient(135deg, var(--dm-navy), var(--dm-darkblue));
+}
 
 .auth-wrapper {
     display: flex;
@@ -41,6 +45,9 @@
     padding: 3rem;
     background: white;
     overflow-y: auto;
+}
+body.dark-mode .auth-form-wrapper {
+    background: var(--dm-blue);
 }
 
 .form-container {
@@ -78,10 +85,16 @@
 .form-header h3 .first-word {
     color: var(--lm-text);
 }
+body.dark-mode .form-header h3 .first-word {
+    color: var(--dm-lightbeige);
+}
 
 .form-header h3 .second-word {
     color: var(--lm-accent);
     position: relative;
+}
+body.dark-mode .form-header h3 .second-word {
+    color: var(--dm-gold);
 }
 
 .form-header h3 .second-word::before {
@@ -107,6 +120,9 @@
     color: var(--lm-blue);
     font-size: 0.9rem;
 }
+body.dark-mode .form-header p {
+    color: var(--dm-white);
+}
 
 .auth-form {
     display: flex;
@@ -123,12 +139,22 @@
     font-family: 'Poppins', sans-serif;
     background: var(--lm-white2);
 }
+body.dark-mode .auth-input {
+    color: var(--dm-lightbeige);
+    background: rgba(2, 15, 77, 0.226);
+}
+body.dark-mode .auth-input::placeholder {
+    color: var(--dm-lightbeige);
+}
 
 .auth-input:focus {
     outline: none;
     border-color: var(--lm-accent);
     background: white;
     box-shadow: 0 0 0 3px rgba(205, 160, 118, 0.1);
+}
+body.dark-mode .auth-input:focus {
+    color: var(--dm-gold);
 }
 
 .auth-button {
@@ -150,42 +176,14 @@
     box-shadow: 0 10px 20px rgba(36, 31, 85, 0.15);
 }
 
-.auth-divider {
-    text-align: center;
-    position: relative;
-    margin: 1.5rem 0;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 30px);
-    height: 1px;
-    background: #e5e7eb;
-}
-
-.auth-divider::before {
-    left: 0;
-}
-
-.auth-divider::after {
-    right: 0;
-}
-
-.auth-divider span {
-    background: white;
-    padding: 0 1rem;
-    color: var(--lm-blue);
-    font-size: 0.8rem;
-}
-
 .auth-switch {
     text-align: center;
     color: var(--lm-blue);
     font-size: 0.85rem;
     margin-top: 1.5rem;
+}
+body.dark-mode .auth-switch{
+    color: var(--dm-lightbeige);
 }
 
 .auth-switch span {
@@ -198,5 +196,8 @@
 .auth-switch span:hover {
     color: var(--lm-accent-2);
     text-decoration: underline;
+}
+body.dark-mode .auth-switch span:hover {
+    color: var(--dm-navy);
 }
 
