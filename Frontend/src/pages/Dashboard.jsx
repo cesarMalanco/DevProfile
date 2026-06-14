@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProfileStats } from "../services/dashboardService";
 import { getUserCvs, updateCv, deleteCv } from "../services/cvService";
+import { exportCvAsPdf } from "../services/pdfService";
 import SkillsChart from "../components/SkillsChart";
 import { CVContext } from "../context/CVContext";
 
@@ -103,6 +104,45 @@ function Dashboard() {
                 icon: "error",
                 title: "Delete failed",
                 text: "Error deleting CV."
+            });
+        }
+    };
+
+    const handleExportPdf = async () => {
+        if (cvs.length === 0) {
+            await Swal.fire({
+                icon: "info",
+                title: "No CV available",
+                text: "Create a CV first to export it as PDF."
+            });
+            return;
+        }
+
+        const inputOptions = cvs.reduce((options, cv) => {
+            options[cv.id_cv] = cv.nombre_cv || `CV ${cv.id_cv}`;
+            return options;
+        }, {});
+
+        const result = await Swal.fire({
+            title: "Select CV to export",
+            input: "select",
+            inputOptions,
+            inputPlaceholder: "Choose a CV",
+            showCancelButton: true,
+            confirmButtonText: "Export",
+            cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed || !result.value) return;
+
+        try {
+            await exportCvAsPdf(result.value);
+        } catch (error) {
+            console.error(error);
+            await Swal.fire({
+                icon: "error",
+                title: "Export failed",
+                text: "Unable to generate the PDF. Please try again."
             });
         }
     };
@@ -228,7 +268,7 @@ function Dashboard() {
                                 <span className="btn-shortcut">⌘P</span>
                             </button>
 
-                            <button className="action-btn secondary">
+                            <button className="action-btn secondary" onClick={handleExportPdf}>
                                 <i className="fa-solid fa-download"></i>
                                 Export PDF
                                 <span className="btn-shortcut">⌘E</span>

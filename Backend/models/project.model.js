@@ -42,4 +42,21 @@ const createProject = async (data) => {
     return result;
 };
 
-module.exports = { createProject };
+const updateProject = async (id, data) => {
+    const { nombre, descripcion, tecnologias, repositorio, deploy, imagen } = data;
+    const [result] = await pool.query(
+        `UPDATE proyectos SET nombre = ?, descripcion = ?, tecnologias = ?, repositorio = ?, deploy = ?, imagen = ? WHERE id_proyecto = ?`,
+        [nombre, descripcion, tecnologias, repositorio, deploy, imagen, id]
+    );
+    return result;
+};
+
+const deleteProjectById = async (id) => {
+    const [result] = await pool.query(
+        `DELETE FROM proyectos WHERE id_proyecto = ?`,
+        [id]
+    );
+    return result;
+};
+
+module.exports = { createProject, updateProject, deleteProjectById };

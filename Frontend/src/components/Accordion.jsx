@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../styles/AccordionStyles.css";
 
-function AccordionItem({ title, icon, children, defaultOpen = false }) {
+function AccordionItem({ title, icon, children, defaultOpen = false, onDelete }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const toggleAccordion = () => {
@@ -19,7 +19,22 @@ function AccordionItem({ title, icon, children, defaultOpen = false }) {
           <i className={`${icon}`}></i>
           <span>{title}</span>
         </div>
-        <i className={`fa-solid fa-chevron-down accordion-icon ${isOpen ? "open" : ""}`}></i>
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          {onDelete && (
+            <button
+              type="button"
+              className="accordion-delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              title="Delete"
+            >
+              <i className="fa-solid fa-trash"></i>
+            </button>
+          )}
+          <i className={`fa-solid fa-chevron-down accordion-icon ${isOpen ? "open" : ""}`}></i>
+        </div>
       </button>
       
       {isOpen && (

@@ -21,3 +21,31 @@ const createProject = async (req, res) => {
 };
 
 module.exports = { createProject };
+
+const updateProject = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const imagePath = req.file ? req.file.filename : req.body.imagen || null;
+        const projectData = { ...req.body, imagen: imagePath };
+
+        await ProjectModel.updateProject(id, projectData);
+
+        res.status(200).json({ message: "Project updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error updating project" });
+    }
+};
+
+const deleteProject = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await ProjectModel.deleteProjectById(id);
+        res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error deleting project" });
+    }
+};
+
+module.exports = { createProject, updateProject, deleteProject };

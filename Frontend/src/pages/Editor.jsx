@@ -11,9 +11,9 @@ import { createProfile } from "../services/profileService";
 import { createCv, getCvById, updateCv } from "../services/cvService";
 import { useContext } from "react";
 import { CVContext } from "../context/CVContext";
-import { createProject } from "../services/projectService";
-import { createEducation } from "../services/educationService";
-import { createLanguage } from "../services/languajeService";
+import { createProject, updateProject, deleteProject } from "../services/projectService";
+import { createEducation, updateEducation, deleteEducation } from "../services/educationService";
+import { createLanguage, updateLanguage, deleteLanguage } from "../services/languajeService";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { isEmail, isURL } from "../utils/validations";
@@ -22,7 +22,7 @@ import { isEmail, isURL } from "../utils/validations";
 function Editor() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addSkill } = useContext(CVContext);
+  const { addSkill, editSkill, removeSkill } = useContext(CVContext);
   const [formData, setFormData] = useState({
     nombre_completo: "",
     profesion: "",
@@ -223,6 +223,18 @@ function Editor() {
     );
   };
 
+  const handleDeleteSkill = async (index) => {
+    const skill = skillsList[index];
+    try {
+      if (skill && skill.id_habilidad) {
+        await removeSkill(skill.id_habilidad);
+      }
+    } catch (error) {
+      console.error("Error deleting skill:", error);
+    }
+    setSkillsList((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleAddProject = async () => {
     if (!hasFormValues(projectData)) {
       await Swal.fire({
@@ -276,6 +288,18 @@ function Editor() {
     );
   };
 
+  const handleDeleteProject = async (index) => {
+    const project = projectsList[index];
+    try {
+      if (project && project.id_proyecto) {
+        await deleteProject(project.id_proyecto);
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+    setProjectsList((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleAddEducation = async () => {
     if (!hasFormValues(educationData)) {
       await Swal.fire({
@@ -327,6 +351,18 @@ function Editor() {
     );
   };
 
+  const handleDeleteEducation = async (index) => {
+    const education = educationList[index];
+    try {
+      if (education && education.id_educacion) {
+        await deleteEducation(education.id_educacion);
+      }
+    } catch (error) {
+      console.error("Error deleting education:", error);
+    }
+    setEducationList((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleAddLanguage = async () => {
     if (!hasFormValues(languageData)) {
       await Swal.fire({
@@ -364,6 +400,18 @@ function Editor() {
         idx === index ? { ...language, [field]: value } : language
       )
     );
+  };
+
+  const handleDeleteLanguage = async (index) => {
+    const language = languagesList[index];
+    try {
+      if (language && language.id_idioma) {
+        await deleteLanguage(language.id_idioma);
+      }
+    } catch (error) {
+      console.error("Error deleting language:", error);
+    }
+    setLanguagesList((prev) => prev.filter((_, i) => i !== index));
   };
 
   const validatePersonalForm = () => {
@@ -550,6 +598,63 @@ function Editor() {
 
         const cvResult = await createCv(cvPayload);
         id_cv = cvResult.insertId;
+      }
+
+      if (isEditing) {
+        try {
+          for (const skill of skillsList.filter((s) => s._saved)) {
+            if (skill.id_habilidad) {
+              await editSkill(skill.id_habilidad, {
+                nombre: skill.nombre,
+                categoria: skill.categoria,
+                nivel: skill.nivel,
+                descripcion: skill.descripcion
+              });
+            }
+          }
+
+          for (const project of projectsList.filter((p) => p._saved)) {
+            if (project.id_proyecto) {
+              const projectForm = new FormData();
+              projectForm.append("nombre", project.nombre);
+              projectForm.append("descripcion", project.descripcion);
+              projectForm.append("tecnologias", project.tecnologias);
+              projectForm.append("repositorio", project.repositorio);
+              projectForm.append("deploy", project.deploy);
+              if (project.imagen instanceof File) {
+                projectForm.append("Foto_proyecto", project.imagen);
+              } else if (project.imagen) {
+                projectForm.append("imagen", project.imagen);
+              }
+
+              await updateProject(project.id_proyecto, projectForm);
+            }
+          }
+
+          for (const education of educationList.filter((e) => e._saved)) {
+            if (education.id_educacion) {
+              await updateEducation(education.id_educacion, {
+                institucion: education.institucion,
+                programa: education.programa,
+                periodo: education.periodo,
+                descripcion: education.descripcion,
+                evidencia: education.evidencia
+              });
+            }
+          }
+
+          for (const language of languagesList.filter((l) => l._saved)) {
+            if (language.id_idioma) {
+              await updateLanguage(language.id_idioma, {
+                idioma: language.idioma,
+                nivel: language.nivel,
+                descripcion: language.descripcion
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error updating saved items:", err);
+        }
       }
 
       const skillsToSave = [
@@ -800,6 +905,7 @@ function Editor() {
           onAdd={handleAddSkill}
           onClear={handleClearSkill}
           onUpdate={handleUpdateSkill}
+          onDelete={handleDeleteSkill}
           errors={skillErrors}
         />
         <ProjectForm
@@ -809,6 +915,7 @@ function Editor() {
           onAdd={handleAddProject}
           onClear={handleClearProject}
           onUpdate={handleUpdateProject}
+          onDelete={handleDeleteProject}
           errors={projectErrors}
         />
         <EducationForm
@@ -818,6 +925,7 @@ function Editor() {
           onAdd={handleAddEducation}
           onClear={handleClearEducation}
           onUpdate={handleUpdateEducation}
+          onDelete={handleDeleteEducation}
           errors={educationErrors}
         />
         <LanguageForm
@@ -827,6 +935,7 @@ function Editor() {
           onAdd={handleAddLanguage}
           onClear={handleClearLanguage}
           onUpdate={handleUpdateLanguage}
+          onDelete={handleDeleteLanguage}
           errors={languageErrors}
         />
         <div className ="form-actions">

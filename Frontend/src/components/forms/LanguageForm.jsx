@@ -2,7 +2,7 @@ import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 import AccordionItem from "../Accordion";
 
-function LanguageForm({ languageData, setLanguageData, languagesList = [], onAdd, onClear, onUpdate, errors = {} }) {
+function LanguageForm({ languageData, setLanguageData, languagesList = [], onAdd, onClear, onUpdate, onDelete, errors = {} }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +38,7 @@ function LanguageForm({ languageData, setLanguageData, languagesList = [], onAdd
                 key={index}
                 title={`${language.idioma || "Language"}${language.nivel ? ` - ${language.nivel}` : ""}`}
                 icon="fa-solid fa-language"
+                onDelete={() => onDelete && onDelete(index)}
               >
                 <div className="input-group">
                   <label>Language</label>

@@ -32,4 +32,21 @@ const createLanguage = async (data) => {
     return result;
 };
 
-module.exports = { createLanguage };
+const updateLanguage = async (id, data) => {
+    const { idioma, nivel, descripcion } = data;
+    const [result] = await pool.query(
+        `UPDATE idiomas SET idioma = ?, nivel = ?, descripcion = ? WHERE id_idioma = ?`,
+        [idioma, nivel, descripcion, id]
+    );
+    return result;
+};
+
+const deleteLanguageById = async (id) => {
+    const [result] = await pool.query(
+        `DELETE FROM idiomas WHERE id_idioma = ?`,
+        [id]
+    );
+    return result;
+};
+
+module.exports = { createLanguage, updateLanguage, deleteLanguageById };

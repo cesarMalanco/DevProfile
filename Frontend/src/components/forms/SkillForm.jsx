@@ -2,7 +2,7 @@ import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 import AccordionItem from "../Accordion";
 
-function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, onUpdate, errors = {} }) {
+function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, onUpdate, onDelete, errors = {} }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +35,7 @@ function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, o
                 key={index}
                 title={`${skill.nombre || "Skill"}${skill.categoria ? ` - ${skill.categoria}` : ""}`}
                 icon="fa-solid fa-star"
+                onDelete={() => onDelete && onDelete(index)}
               >
                 <div className="form-grid">
                   <div className="input-group">

@@ -2,7 +2,7 @@ import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 import AccordionItem from "../Accordion";
 
-function EducationForm({ educationData, setEducationData, educationList = [], onAdd, onClear, onUpdate, errors = {} }){
+function EducationForm({ educationData, setEducationData, educationList = [], onAdd, onClear, onUpdate, onDelete, errors = {} }){
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEducationData({ ...educationData, [name]: value });
@@ -34,6 +34,7 @@ function EducationForm({ educationData, setEducationData, educationList = [], on
                 key={index}
                 title={`${education.institucion || "Education"}${education.programa ? ` - ${education.programa}` : ""}`}
                 icon="fa-solid fa-graduation-cap"
+                onDelete={() => onDelete && onDelete(index)}
               >
                 <div className="form-grid">
                   <div className="input-group">

@@ -47,7 +47,7 @@ const ImagePreview = ({ image }) => {
   );
 };
 
-function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, onClear, onUpdate, errors = {} }) {
+function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, onClear, onUpdate, onDelete, errors = {} }) {
   const currentImagePreview = useImagePreview(projectData.imagen);
 
   const handleChange = (e) => {
@@ -92,6 +92,7 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
                   key={index}
                   title={`${project.nombre || "Project"}${project.tecnologias ? ` - ${project.tecnologias}` : ""}`}
                   icon="fa-solid fa-folder-open"
+                  onDelete={() => onDelete && onDelete(index)}
                 >
                   <div className="form-grid">
                     <div className="input-group">
