@@ -230,7 +230,6 @@ function Dashboard() {
                                 <i className="fa-solid fa-chart-pie"></i>
                                 <h3>My Graph</h3>
                             </div>
-                            <button className="card-link" onClick={() => navigate("/cvs")}>View all</button>
                         </div>
 
                         {(!loading && skills && skills.length > 0) ? (

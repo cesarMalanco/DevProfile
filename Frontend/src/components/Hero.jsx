@@ -4,8 +4,13 @@ import cv3 from "../assets/cv3.png";
 import "../../src/index.css";
 import "../styles/HeroStyles.css";
 import "../styles/globalStyles.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Hero() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
     return (
         <section className="hero">
             <div className="hero-left">
@@ -24,12 +29,12 @@ function Hero() {
                 </p>
 
                 <div className="hero-buttons">
-                    <button className="btn-primary">
+                    <button className="btn-primary" onClick={() => navigate(user?"/editor":"/login")}>
                         Create CV
                     </button>
 
-                    <button className="btn-secondary">
-                        Explore Templates
+                    <button className="btn-secondary" onClick={() => navigate(user ? "/dashboard" : "/login")}>
+                        Explore your stadistics
                     </button>
                 </div>
 

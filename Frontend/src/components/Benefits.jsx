@@ -68,7 +68,7 @@ function Benefits() {
                         <i className="fa-solid fa-palette"></i>
                         <h3>Custom Designs</h3>
                     </div>
-                    <p>Personalize colors and layouts.</p>
+                    <p>Personalize your information</p>
                 </div>
 
                 <div className="benefit bottom-right">

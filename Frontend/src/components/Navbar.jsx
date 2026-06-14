@@ -78,7 +78,13 @@ function Navbar() {
             <nav className="navbar">
                 <ul className="nav-links">
                     <li><NavLink to="/">HOME</NavLink></li>
-                    <li><NavLink to="/cvs">CV'S</NavLink></li>
+                    {!user && (
+                        <li>
+                            <NavLink to="/login">
+                                START CREATING
+                            </NavLink>
+                        </li>
+                    )}
                     {user && (
                         <>
                             <li><NavLink to="/editor">EDITOR</NavLink></li>

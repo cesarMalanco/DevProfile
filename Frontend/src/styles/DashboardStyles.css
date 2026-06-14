@@ -207,27 +207,6 @@ body.dark-mode .card-header h3{
     color: var(--lm-text);
 }
 
-.card-link {
-    background: none;
-    border: none;
-    color: var(--lm-accent);
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    font-weight: bold;
-}
-
-.card-link:hover {
-    color: var(--lm-accent-2);
-    transition: color 0.3s ease;
-}
-body.dark-mode .card-link {
-    color: var(--dm-gold);
-}
-body.dark-mode .card-link:hover {
-    color: var(--dm-darkblue);
-}
-
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;

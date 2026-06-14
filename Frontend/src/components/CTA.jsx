@@ -1,7 +1,12 @@
 import "../styles/CTAStyles.css";
 import "../styles/globalStyles.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function CTA() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
     return (
         <section className="cta-section">
             <div className="cta-container">
@@ -24,14 +29,14 @@ function CTA() {
                     </p>
 
                     <div className="cta-buttons">
-                        <button className="cta-btn-primary">
+                        <button className="cta-btn-primary" onClick={() => navigate(user ? "/editor" : "/login")}>
                             <i className="fa-solid fa-rocket"></i>
                             Get Started Free
                         </button>
                         
-                        <button className="cta-btn-secondary">
+                        <button className="cta-btn-secondary" onClick={() => navigate(user ? "/dashboard" : "/login")}>
                             <i className="fa-regular fa-folder-open"></i>
-                            Choose a template
+                            Organize your CVs
                         </button>
                     </div>
 

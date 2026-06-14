@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
-import CVs from "../pages/CVs";
 import Editor from "../pages/Editor";
 import Preview from "../pages/Preview";
 import Dashboard from "../pages/Dashboard";
@@ -13,7 +12,6 @@ function AppRouter() {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/cvs" element={<CVs />} />
             <Route path="/about" element={<About />} />
             <Route path="/dashboard" element={
                     <ProtectedRoute>

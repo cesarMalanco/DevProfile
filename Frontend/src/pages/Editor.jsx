@@ -442,7 +442,7 @@ function Editor() {
     }
 
     if (!formData.ciudad.trim()) {
-      newErrors.ciudad = "City is required";
+      newErrors.ciudad = "Address is required";
     }
 
     if (!formData.descripcion.trim()) {

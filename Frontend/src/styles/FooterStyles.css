@@ -268,23 +268,26 @@ body.dark-mode .newsletter-form button {
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
-}
-
-.footer-legal a {
     color: rgba(255, 255, 255, 0.6);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.3s ease;
+    font-size: .8rem;
 }
 
-.footer-legal a:hover {
+.footer-link-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.footer-link-btn:hover {
     color: var(--lm-accent);
 }
 
 .separator {
     color: rgba(255, 255, 255, 0.3);
 }
-
 
 .scroll-to-top {
     position: fixed;

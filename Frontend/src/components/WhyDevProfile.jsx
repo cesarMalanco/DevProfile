@@ -1,6 +1,11 @@
 import "../styles/WhyDevStyles.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function WhyDevProfile() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
     return (
         <section className="why-section">
             <div className="why-container">
@@ -26,7 +31,7 @@ function WhyDevProfile() {
                         <p>
                             Optimized to pass recruiter screening systems with intelligent keyword matching.
                         </p>
-                        <div className="feature-link">
+                        <div className="feature-link" onClick={() => navigate(user ? "/dashboard" : "/login")}>
                             <span>Learn more</span>
                             <i className="fa-solid fa-arrow-right"></i>
                         </div>
@@ -40,7 +45,7 @@ function WhyDevProfile() {
                         <p>
                             Download your CV in professional PDF format with one click.
                         </p>
-                        <div className="feature-link">
+                        <div className="feature-link" onClick={() => navigate(user ? "/dashboard" : "/login")}>
                             <span>Learn more</span>
                             <i className="fa-solid fa-arrow-right"></i>
                         </div>
@@ -54,7 +59,7 @@ function WhyDevProfile() {
                         <p>
                             Get insights on how to improve your CV based on industry standards.
                         </p>
-                        <div className="feature-link">
+                        <div className="feature-link" onClick={() => navigate(user ? "/dashboard" : "/login")}>
                             <span>Learn more</span>
                             <i className="fa-solid fa-arrow-right"></i>
                         </div>

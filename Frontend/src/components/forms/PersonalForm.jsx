@@ -170,7 +170,7 @@ function PersonalForm({ formData, setFormData, foto, setFoto, errors }) {
         <div className="input-group">
           <label>
             <i className="fa-solid fa-location-dot"></i>
-            City
+            Address
           </label>
           <input
             type="text"
