@@ -16,10 +16,15 @@ import { createEducation, updateEducation, deleteEducation } from "../services/e
 import { createLanguage, updateLanguage, deleteLanguage } from "../services/languajeService";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useTheme } from "../context/ThemeContext";
+import { showAlert } from "../utils/swalHelpers";
+import {validateSkillData,validateProjectData,validateEducationData,validateLanguageData,validateListItems,getFirstValidationMessage} from "../utils/validations";
 import { isEmail, isURL } from "../utils/validations";
+import { useEditorHandlers } from "../hooks/useEditorHandlers";
 
 
 function Editor() {
+  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addSkill, editSkill, removeSkill } = useContext(CVContext);
@@ -80,12 +85,6 @@ function Editor() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingCvId, setEditingCvId] = useState(null);
 
-  useEffect(() => {
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    } catch (e) {
-    }
-  }, []);
 
   const hasFormValues = (obj) =>
     Object.values(obj).some((value) => {
@@ -94,325 +93,71 @@ function Editor() {
       if (value instanceof File) return true;
       return Boolean(value);
     });
+  const {
+    handleAddSkill,
+    handleClearSkill,
+    handleUpdateSkill,
+    handleDeleteSkill,
 
-  const getFirstValidationMessage = (validationErrors) =>
-    Object.values(validationErrors)[0] || "Please complete all required fields.";
+    handleAddProject,
+    handleClearProject,
+    handleUpdateProject,
+    handleDeleteProject,
 
-  const validateSkillData = (skill, prefix = "Skill") => {
-    const newErrors = {};
+    handleAddEducation,
+    handleClearEducation,
+    handleUpdateEducation,
+    handleDeleteEducation,
 
-    if (!skill.nombre?.trim()) {
-      newErrors.nombre = `${prefix} name is required`;
-    }
-    if (!skill.categoria?.trim()) {
-      newErrors.categoria = `${prefix} category is required`;
-    }
-    if (!skill.nivel?.trim()) {
-      newErrors.nivel = `${prefix} level is required`;
-    }
-    if (!skill.descripcion?.trim()) {
-      newErrors.descripcion = `${prefix} description is required`;
-    }
+    handleAddLanguage,
+    handleClearLanguage,
+    handleUpdateLanguage,
+    handleDeleteLanguage
+  } = useEditorHandlers({
+    skillData,
+    setSkillData,
+    skillsList,
+    setSkillsList,
+    setSkillErrors,
+    removeSkill,
 
-    return newErrors;
-  };
+    projectData,
+    setProjectData,
+    projectsList,
+    setProjectsList,
+    setProjectErrors,
+    deleteProject,
+    validateProjectData,
 
-  const validateProjectData = (project, prefix = "Project") => {
-    const newErrors = {};
+    educationData,
+    setEducationData,
+    educationList,
+    setEducationList,
+    setEducationErrors,
+    deleteEducation,
+    validateEducationData,
 
-    if (!project.nombre?.trim()) {
-      newErrors.nombre = `${prefix} name is required`;
-    }
-    if (!project.descripcion?.trim()) {
-      newErrors.descripcion = `${prefix} description is required`;
-    }
-    if (!project.tecnologias?.trim()) {
-      newErrors.tecnologias = `${prefix} technologies are required`;
-    }
-    if (project.repositorio && !isURL(project.repositorio)) {
-      newErrors.repositorio = `${prefix} repository must be a valid URL`;
-    }
-    if (project.deploy && !isURL(project.deploy)) {
-      newErrors.deploy = `${prefix} live demo must be a valid URL`;
-    }
+    languageData,
+    setLanguageData,
+    languagesList,
+    setLanguagesList,
+    setLanguageErrors,
+    deleteLanguage,
+    validateLanguageData,
 
-    return newErrors;
-  };
+    darkMode,
+    showAlert,
+    validateSkillData,
+    getFirstValidationMessage,
+    hasFormValues
+  });
 
-  const validateEducationData = (education, prefix = "Education entry") => {
-    const newErrors = {};
-
-    if (!education.institucion?.trim()) {
-      newErrors.institucion = `${prefix} institution is required`;
-    }
-    if (!education.programa?.trim()) {
-      newErrors.programa = `${prefix} program or course is required`;
-    }
-    if (!education.periodo?.trim()) {
-      newErrors.periodo = `${prefix} period is required`;
-    }
-    if (education.evidencia && !isURL(education.evidencia)) {
-      newErrors.evidencia = `${prefix} evidence link must be a valid URL`;
-    }
-
-    return newErrors;
-  };
-
-  const validateLanguageData = (language, prefix = "Language") => {
-    const newErrors = {};
-
-    if (!language.idioma?.trim()) {
-      newErrors.idioma = `${prefix} is required`;
-    }
-    if (!language.nivel?.trim()) {
-      newErrors.nivel = `${prefix} level is required`;
-    }
-    if (!language.descripcion?.trim()) {
-      newErrors.descripcion = `${prefix} description is required`;
-    }
-
-    return newErrors;
-  };
-
-  const validateListItems = (list, validator, title) => {
-    for (let i = 0; i < list.length; i += 1) {
-      const itemErrors = validator(list[i], `${title} ${i + 1}`);
-      if (Object.keys(itemErrors).length > 0) {
-        return itemErrors;
-      }
-    }
-    return {};
-  };
-
-  const handleAddSkill = async () => {
-    if (!hasFormValues(skillData)) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Action not allowed",
-        text: "Please complete and save the current skill before adding a new one."
-      });
-      return;
-    }
-
-    const validationErrors = validateSkillData(skillData);
-    if (Object.keys(validationErrors).length > 0) {
-      setSkillErrors(validationErrors);
-      await Swal.fire({
-        icon: "error",
-        title: "Invalid skill",
-        text: getFirstValidationMessage(validationErrors)
-      });
-      return;
-    }
-
-    setSkillErrors({});
-    setSkillsList((prev) => [...prev, skillData]);
-    setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
-  };
-
-  const handleClearSkill = () => {
-    setSkillData({ nombre: "", categoria: "", nivel: "", descripcion: "" });
-    setSkillErrors({});
-  };
-
-  const handleUpdateSkill = (index, field, value) => {
-    setSkillsList((prev) =>
-      prev.map((skill, idx) =>
-        idx === index ? { ...skill, [field]: value } : skill
-      )
-    );
-  };
-
-  const handleDeleteSkill = async (index) => {
-    const skill = skillsList[index];
+  useEffect(() => {
     try {
-      if (skill && skill.id_habilidad) {
-        await removeSkill(skill.id_habilidad);
-      }
-    } catch (error) {
-      console.error("Error deleting skill:", error);
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } catch (e) {
     }
-    setSkillsList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleAddProject = async () => {
-    if (!hasFormValues(projectData)) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Action not allowed",
-        text: "Please complete and save the current project before adding a new one."
-      });
-      return;
-    }
-
-    const validationErrors = validateProjectData(projectData);
-    if (Object.keys(validationErrors).length > 0) {
-      setProjectErrors(validationErrors);
-      await Swal.fire({
-        icon: "error",
-        title: "Invalid project",
-        text: getFirstValidationMessage(validationErrors)
-      });
-      return;
-    }
-
-    setProjectErrors({});
-    setProjectsList((prev) => [...prev, projectData]);
-    setProjectData({
-      nombre: "",
-      descripcion: "",
-      tecnologias: "",
-      repositorio: "",
-      deploy: "",
-      imagen: null
-    });
-  };
-
-  const handleClearProject = () => {
-    setProjectData({
-      nombre: "",
-      descripcion: "",
-      tecnologias: "",
-      repositorio: "",
-      deploy: "",
-      imagen: null
-    });
-    setProjectErrors({});
-  };
-
-  const handleUpdateProject = (index, field, value) => {
-    setProjectsList((prev) =>
-      prev.map((project, idx) =>
-        idx === index ? { ...project, [field]: value } : project
-      )
-    );
-  };
-
-  const handleDeleteProject = async (index) => {
-    const project = projectsList[index];
-    try {
-      if (project && project.id_proyecto) {
-        await deleteProject(project.id_proyecto);
-      }
-    } catch (error) {
-      console.error("Error deleting project:", error);
-    }
-    setProjectsList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleAddEducation = async () => {
-    if (!hasFormValues(educationData)) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Action not allowed",
-        text: "Please complete and save the current education entry before adding a new one."
-      });
-      return;
-    }
-
-    const validationErrors = validateEducationData(educationData);
-    if (Object.keys(validationErrors).length > 0) {
-      setEducationErrors(validationErrors);
-      await Swal.fire({
-        icon: "error",
-        title: "Invalid education entry",
-        text: getFirstValidationMessage(validationErrors)
-      });
-      return;
-    }
-
-    setEducationErrors({});
-    setEducationList((prev) => [...prev, educationData]);
-    setEducationData({
-      institucion: "",
-      programa: "",
-      periodo: "",
-      descripcion: "",
-      evidencia: ""
-    });
-  };
-
-  const handleClearEducation = () => {
-    setEducationData({
-      institucion: "",
-      programa: "",
-      periodo: "",
-      descripcion: "",
-      evidencia: ""
-    });
-    setEducationErrors({});
-  };
-
-  const handleUpdateEducation = (index, field, value) => {
-    setEducationList((prev) =>
-      prev.map((education, idx) =>
-        idx === index ? { ...education, [field]: value } : education
-      )
-    );
-  };
-
-  const handleDeleteEducation = async (index) => {
-    const education = educationList[index];
-    try {
-      if (education && education.id_educacion) {
-        await deleteEducation(education.id_educacion);
-      }
-    } catch (error) {
-      console.error("Error deleting education:", error);
-    }
-    setEducationList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleAddLanguage = async () => {
-    if (!hasFormValues(languageData)) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Action not allowed",
-        text: "Please complete and save the current language before adding a new one."
-      });
-      return;
-    }
-
-    const validationErrors = validateLanguageData(languageData);
-    if (Object.keys(validationErrors).length > 0) {
-      setLanguageErrors(validationErrors);
-      await Swal.fire({
-        icon: "error",
-        title: "Invalid language entry",
-        text: getFirstValidationMessage(validationErrors)
-      });
-      return;
-    }
-
-    setLanguageErrors({});
-    setLanguagesList((prev) => [...prev, languageData]);
-    setLanguageData({ idioma: "", nivel: "", descripcion: "" });
-  };
-
-  const handleClearLanguage = () => {
-    setLanguageData({ idioma: "", nivel: "", descripcion: "" });
-    setLanguageErrors({});
-  };
-
-  const handleUpdateLanguage = (index, field, value) => {
-    setLanguagesList((prev) =>
-      prev.map((language, idx) =>
-        idx === index ? { ...language, [field]: value } : language
-      )
-    );
-  };
-
-  const handleDeleteLanguage = async (index) => {
-    const language = languagesList[index];
-    try {
-      if (language && language.id_idioma) {
-        await deleteLanguage(language.id_idioma);
-      }
-    } catch (error) {
-      console.error("Error deleting language:", error);
-    }
-    setLanguagesList((prev) => prev.filter((_, i) => i !== index));
-  };
+  }, []);
 
   const validatePersonalForm = () => {
     const newErrors = {};
@@ -470,11 +215,11 @@ function Editor() {
   const handleSubmit = async () => {
     try{
       const validationErrors = validatePersonalForm();
-
+      console.log("SKILLS LIST:", skillsList);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
 
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid form",
           text: "Please fix the errors before continuing",
@@ -484,7 +229,7 @@ function Editor() {
 
       const currentSkillErrors = hasFormValues(skillData) ? validateSkillData(skillData, "Current skill") : {};
       if (Object.keys(currentSkillErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid skill",
           text: getFirstValidationMessage(currentSkillErrors)
@@ -494,7 +239,7 @@ function Editor() {
 
       const currentProjectErrors = hasFormValues(projectData) ? validateProjectData(projectData, "Current project") : {};
       if (Object.keys(currentProjectErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid project",
           text: getFirstValidationMessage(currentProjectErrors)
@@ -504,7 +249,7 @@ function Editor() {
 
       const currentEducationErrors = hasFormValues(educationData) ? validateEducationData(educationData, "Current education entry") : {};
       if (Object.keys(currentEducationErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid education entry",
           text: getFirstValidationMessage(currentEducationErrors)
@@ -514,7 +259,7 @@ function Editor() {
 
       const currentLanguageErrors = hasFormValues(languageData) ? validateLanguageData(languageData, "Current language") : {};
       if (Object.keys(currentLanguageErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid language entry",
           text: getFirstValidationMessage(currentLanguageErrors)
@@ -524,7 +269,7 @@ function Editor() {
 
       const listSkillErrors = validateListItems(skillsList, validateSkillData, "Skill");
       if (Object.keys(listSkillErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid skill",
           text: getFirstValidationMessage(listSkillErrors)
@@ -534,7 +279,7 @@ function Editor() {
 
       const listProjectErrors = validateListItems(projectsList, validateProjectData, "Project");
       if (Object.keys(listProjectErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid project",
           text: getFirstValidationMessage(listProjectErrors)
@@ -544,7 +289,7 @@ function Editor() {
 
       const listEducationErrors = validateListItems(educationList, validateEducationData, "Education entry");
       if (Object.keys(listEducationErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid education entry",
           text: getFirstValidationMessage(listEducationErrors)
@@ -554,7 +299,7 @@ function Editor() {
 
       const listLanguageErrors = validateListItems(languagesList, validateLanguageData, "Language");
       if (Object.keys(listLanguageErrors).length > 0) {
-        await Swal.fire({
+        await showAlert(darkMode, {
           icon: "error",
           title: "Invalid language entry",
           text: getFirstValidationMessage(listLanguageErrors)
@@ -733,18 +478,18 @@ function Editor() {
       localStorage.removeItem("educationData");
       localStorage.removeItem("languageData");
 
-      await Swal.fire({
+      await showAlert(darkMode, {
         icon: "success",
         title: "Profile saved",
         text: "Information saved successfully",
         confirmButtonText: "View CV"
       });
 
-      navigate("/preview");
+      navigate(`/preview?cvId=${id_cv}`);
     }catch(error){
       console.error("Error saving:", error);
 
-      await Swal.fire({
+      await showAlert(darkMode, {
         icon: "error",
         title: "Error",
         text: "Could not save information"

@@ -8,8 +8,10 @@ import { getUserCvs, updateCv, deleteCv } from "../services/cvService";
 import { exportCvAsPdf } from "../services/pdfService";
 import SkillsChart from "../components/SkillsChart";
 import { CVContext } from "../context/CVContext";
+import { useTheme } from "../context/ThemeContext";
 
 function Dashboard() {
+    const { darkMode } = useTheme();
     const navigate = useNavigate();
     const { user } = useAuth();
     const { fetchSkills, skills } = useContext(CVContext);
@@ -17,6 +19,8 @@ function Dashboard() {
     const [stats, setStats] = useState({ cvs: 0, skills: 0, projects: 0, education: 0, languages: 0 });
     const [cvs, setCvs] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    
 
     const fetchCvs = async () => {
         try {
@@ -51,6 +55,69 @@ function Dashboard() {
 
         fetchData();
     }, [user]);
+
+    const selectCv = async (title, confirmButtonText) => {
+        if (cvs.length === 0) {
+            await Swal.fire({
+                icon: "info",
+                title: "No CV available",
+                text: "Create a CV first.",
+
+                background: darkMode
+                    ? "var(--dm-blue)"
+                    : "var(--lm-white)",
+
+                color: darkMode
+                    ? "var(--dm-lightbeige)"
+                    : "var(--lm-text)",
+
+                confirmButtonColor: darkMode
+                    ? "#B58D57"
+                    : "#467db8",
+            });
+
+            return null;
+        }
+
+        const inputOptions = cvs.reduce((options, cv) => {
+            options[cv.id_cv] = cv.nombre_cv || `CV ${cv.id_cv}`;
+            return options;
+        }, {});
+
+        const result = await Swal.fire({
+            title,
+            input: "select",
+            inputOptions,
+            inputPlaceholder: "Choose a CV",
+            showCancelButton: true,
+            confirmButtonText,
+            cancelButtonText: "Cancel",
+            background: darkMode ? "var(--dm-blue)" : "var(--lm-white2)",
+            color: darkMode ? "var(--dm-lightbeige)" : "var(--lm-text)",
+            customClass: {
+                popup: "swal-popup",
+                title: "swal-title",
+                input: "swal-select",
+                confirmButton: "swal-confirm",
+                cancelButton: "swal-cancel",
+            }
+        });
+
+        if (!result.isConfirmed || !result.value) {
+            return null;
+        }
+
+        return result.value;
+    };
+
+    const handlePreviewCv = async () => {
+        const cvId = await selectCv(
+            "Select CV to Preview",
+            "Preview"
+        );
+        if (!cvId) return;
+        navigate(`/preview?cvId=${cvId}`);
+    };
 
     const handleEditCv = async (cv) => {
         const currentName = cv.nombre_cv || `CV ${cv.id_cv}`;
@@ -109,36 +176,18 @@ function Dashboard() {
     };
 
     const handleExportPdf = async () => {
-        if (cvs.length === 0) {
-            await Swal.fire({
-                icon: "info",
-                title: "No CV available",
-                text: "Create a CV first to export it as PDF."
-            });
-            return;
-        }
+        const cvId = await selectCv(
+            "Select CV to Export",
+            "Export"
+        );
 
-        const inputOptions = cvs.reduce((options, cv) => {
-            options[cv.id_cv] = cv.nombre_cv || `CV ${cv.id_cv}`;
-            return options;
-        }, {});
-
-        const result = await Swal.fire({
-            title: "Select CV to export",
-            input: "select",
-            inputOptions,
-            inputPlaceholder: "Choose a CV",
-            showCancelButton: true,
-            confirmButtonText: "Export",
-            cancelButtonText: "Cancel"
-        });
-
-        if (!result.isConfirmed || !result.value) return;
+        if (!cvId) return;
 
         try {
-            await exportCvAsPdf(result.value);
+            await exportCvAsPdf(cvId);
         } catch (error) {
             console.error(error);
+
             await Swal.fire({
                 icon: "error",
                 title: "Export failed",
@@ -151,7 +200,7 @@ function Dashboard() {
         <section className="dashboard-section">
             <div className="dashboard-container">
 
-                {/* HEADER */}
+
                 <div className="dashboard-header">
                     <div className="header-content">
                         <div className="header-title">
@@ -167,7 +216,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                {/* STATS CARDS */}
+
                 <div className="stats-grid">
                     <div className="stat-card">
                         <div className="stat-icon purple">
@@ -220,10 +269,9 @@ function Dashboard() {
                     </div>
                 </div>
 
-                {/* CONTENIDO PRINCIPAL */}
+
                 <div className="dashboard-content">
 
-                    {/* SELECTED CV*/}
                     <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-header-left">
@@ -245,7 +293,6 @@ function Dashboard() {
                         )}
                     </div>
 
-                    {/* QUICK ACTIONS */}
                     <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-header-left">
@@ -261,7 +308,7 @@ function Dashboard() {
                                 <span className="btn-shortcut">⌘N</span>
                             </button>
 
-                            <button className="action-btn secondary" onClick={() => navigate("/preview") }>
+                            <button className="action-btn secondary" onClick={handlePreviewCv}>
                                 <i className="fa-solid fa-eye"></i>
                                 Preview
                                 <span className="btn-shortcut">⌘P</span>
@@ -276,7 +323,6 @@ function Dashboard() {
                     </div>
                 </div>
 
-                {/* SECCIÓN ADICIONAL*/}
                 <div className="activity-section">
                     <div className="dashboard-card full-width">
                         <div className="card-header">

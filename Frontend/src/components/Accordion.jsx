@@ -10,8 +10,7 @@ function AccordionItem({ title, icon, children, defaultOpen = false, onDelete })
 
   return (
     <div className="accordion-item">
-      <button
-        type="button"
+      <div
         className={`accordion-header ${isOpen ? "active" : ""}`}
         onClick={toggleAccordion}
       >
@@ -35,7 +34,7 @@ function AccordionItem({ title, icon, children, defaultOpen = false, onDelete })
           )}
           <i className={`fa-solid fa-chevron-down accordion-icon ${isOpen ? "open" : ""}`}></i>
         </div>
-      </button>
+      </div>
       
       {isOpen && (
         <div className="accordion-content">

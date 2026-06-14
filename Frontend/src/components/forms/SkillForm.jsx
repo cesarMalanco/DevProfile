@@ -62,9 +62,9 @@ function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, o
                     onChange={(e) => handleListChange(index, "nivel", e.target.value)}
                   >
                     <option value="">Select a level</option>
-                    <option value="Basico">Básico</option>
-                    <option value="Intermedio">Intermedio</option>
-                    <option value="Avanzado">Avanzado</option>
+                    <option value="Basic">Basic</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
                   </select>
                 </div>
                 <div className="input-group">
@@ -123,9 +123,9 @@ function SkillForm({ skillData, setSkillData, skillsList = [], onAdd, onClear, o
             onChange={handleChange}
           >
             <option value="">Select a level</option>
-            <option value="Basico">Básico</option>
-            <option value="Intermedio">Intermedio</option>
-            <option value="Avanzado">Avanzado</option>
+            <option value="Basic">Basic</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
           </select>
           {errors?.nivel && <span className="error-message">{errors.nivel}</span>}
         </div>

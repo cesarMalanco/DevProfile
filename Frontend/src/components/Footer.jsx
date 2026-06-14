@@ -49,7 +49,7 @@ function Footer() {
             text: "Thank you for subscribing to our newsletter.",
 
             background: darkMode ? "var(--dm-blue)" : "var(--lm-white)",
-            color: darkMode ? "var(--dm-lightbeige" : "var(--lm-text)",
+            color: darkMode ? "var(--dm-lightbeige)" : "var(--lm-text)",
 
             confirmButtonColor: darkMode
                 ? "var(--dm-navy)"

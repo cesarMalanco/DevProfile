@@ -23,15 +23,8 @@ function InfoModal({ type, onClose }) {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()} 
-            >
-                <button
-                    className="modal-close"
-                    onClick={onClose}
-                    aria-label="Close modal"
-                >
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <button className="modal-close" onClick={onClose} aria-label="Close modal">
                     ×
                 </button>
 
@@ -42,10 +35,7 @@ function InfoModal({ type, onClose }) {
                 </div>
 
                 <div className="modal-footer">
-                    <button
-                        className="modal-btn modal-btn-primary"
-                        onClick={onClose}
-                    >
+                    <button className="modal-btn modal-btn-primary" onClick={onClose}>
                         Got it
                     </button>
                 </div>

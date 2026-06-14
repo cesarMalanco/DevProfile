@@ -13,7 +13,7 @@ import { CVContext } from "../context/CVContext";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const levelMap = { Basico: 1, Intermedio: 2, Avanzado: 3 };
+const levelMap = { Basic: 1, Intermediate: 2, Advanced: 3 };
 
 export default function SkillsChart() {
   const { skills } = useContext(CVContext);

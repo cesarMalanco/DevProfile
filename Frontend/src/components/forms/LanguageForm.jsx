@@ -54,10 +54,10 @@ function LanguageForm({ languageData, setLanguageData, languagesList = [], onAdd
                     value={language.nivel}
                     onChange={(e) => handleListChange(index, "nivel", e.target.value)}
                   >
-                    <option value="Basico">Basic</option>
-                    <option value="Intermedio">Intermediate</option>
-                    <option value="Avanzado">Advanced</option>
-                    <option value="Nativo">Native</option>
+                    <option value="Basic">Basic</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Native">Native</option>
                   </select>
                 </div>
                 <div className="input-group">
@@ -98,11 +98,12 @@ function LanguageForm({ languageData, setLanguageData, languagesList = [], onAdd
             name="nivel"
             value={languageData.nivel}
             onChange={handleChange}
-          >
-            <option value="Basico">Basic</option>
-            <option value="Intermedio">Intermediate</option>
-            <option value="Avanzado">Advanced</option>
-            <option value="Nativo">Native</option>
+          > 
+            <option value="">Select a level</option>
+            <option value="Basic">Basic</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Native">Native</option>
           </select>
           {errors?.nivel && <span className="error-message">{errors.nivel}</span>}
         </div>
