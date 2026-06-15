@@ -16,7 +16,7 @@ export const CVProvider = ({ children }) => {
 
   const fetchSkills = async () => {
     try {
-      if (!user?.id_usuario) return;
+      if (!user?.id_usuario || isNaN(user.id_usuario)) return;
       const data = await SkillService.getSkills(user.id_usuario);
       setSkills(data);
     } catch (error) {

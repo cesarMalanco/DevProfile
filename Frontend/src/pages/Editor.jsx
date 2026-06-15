@@ -212,6 +212,19 @@ function Editor() {
     return newErrors;
   };
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async () => {
     try{
       const validationErrors = validatePersonalForm();
@@ -325,6 +338,9 @@ function Editor() {
         id_cv = cvResult.insertId;
       }
 
+      // Convertir foto a base64 si es un File
+      const fotoBase64 = await fileToBase64(foto);
+
       const data = {
         id_usuario: user.id_usuario,
         id_cv: id_cv,
@@ -337,7 +353,7 @@ function Editor() {
         github: formData.github,
         linkedin: formData.linkedin,
         portafolio: formData.portafolio,
-        foto_perfil: foto || null
+        foto_perfil: fotoBase64 || null
       };
 
       const profileResult = await createProfile(data);

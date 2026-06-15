@@ -13,10 +13,15 @@ const useImagePreview = (image) => {
     }
 
     if (typeof image === "string") {
-      const fullUrl =
-        image.startsWith("http") || image.startsWith("/")
-          ? image
-          : UPLOADS_URL(image);
+      if (image.startsWith("data:image")) {
+        setPreview(image);
+        return;
+      }
+      if (image.startsWith("http") || image.startsWith("/")) {
+        setPreview(image);
+        return;
+      }
+      const fullUrl = UPLOADS_URL(image);
       setPreview(fullUrl);
       return;
     }
