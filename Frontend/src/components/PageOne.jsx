@@ -1,6 +1,6 @@
 import "../styles/PagesPreview.css";
 
-function PageOne({ cvData }) {
+function PageOne({ cvData, templateId }) {
     const fullName = cvData?.profile?.nombre_completo || "";
     const parts = fullName.trim().split(" ");
 
@@ -8,7 +8,7 @@ function PageOne({ cvData }) {
     const firstNames = parts.join(" ");
 
     return (
-        <div className="resume-page">
+        <div className={`resume-page template-design-${templateId || 1}`}>
             <aside className="resume-sidebar">
                 {cvData.profile?.foto_perfil && (
                     <img

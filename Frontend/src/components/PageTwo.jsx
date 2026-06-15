@@ -1,8 +1,8 @@
 import "../styles/PagesPreview.css";
 
-function PageTwo({ cvData }) {
+function PageTwo({ cvData, templateId }) {
     return (
-        <div className="resume-page">
+        <div className={`resume-page template-design-${templateId || 1}`}>
             <aside className="resume-sidebar">
 
             </aside>

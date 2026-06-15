@@ -183,8 +183,10 @@ function Dashboard() {
 
         if (!cvId) return;
 
+        let templateId = localStorage.getItem(`template_cv_${cvId}`);
+
         try {
-            await exportCvAsPdf(cvId);
+            await exportCvAsPdf(cvId, templateId);
         } catch (error) {
             console.error(error);
 

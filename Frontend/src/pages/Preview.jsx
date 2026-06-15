@@ -14,12 +14,19 @@ import PageTwo from "../components/PageTwo";
         const [cvData, setCvData] = useState(null);
         const [currentPage, setCurrentPage] = useState(1);
 
+        const [templateId, setTemplateId] = useState(1);
+
         useEffect(() => {
             if (!cvId) return;
 
             const loadCv = async () => {
                 const data = await getCvById(cvId);
                 setCvData(data);
+
+                const savedTemplate = localStorage.getItem(`template_cv_${cvId}`);
+                if (savedTemplate) {
+                    setTemplateId(Number(savedTemplate));
+                }
             };
 
             loadCv();
@@ -29,9 +36,22 @@ import PageTwo from "../components/PageTwo";
             return <h2>We couldn't find your file</h2>;
         }
 
+        const handleChangeTemplate = () => {
+            let nextTemplate = templateId + 1;
+            if (nextTemplate > 3) {
+                nextTemplate = 1;
+            }
+        
+            setTemplateId(nextTemplate);
+        
+            if (cvId) {
+                localStorage.setItem(`template_cv_${cvId}`, nextTemplate);
+            }
+        };
+
         const handleExportPdf = async () => {
             try {
-                await exportCvAsPdf(cvId);
+                await exportCvAsPdf(cvId, templateId);
             } catch (error) {
                 console.error(error);
             }
@@ -40,7 +60,8 @@ import PageTwo from "../components/PageTwo";
 
         return (
             <>
-                <div className="preview-section"> 
+                {/* <div className="preview-section">  */}
+                <div className={`preview-section template-design-${templateId}`}>
                     <div className="preview-navigation">
                         <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}><i className="fa-solid fa-arrow-left-long"></i></button>
                         <span>{currentPage} / 2</span>
@@ -48,6 +69,11 @@ import PageTwo from "../components/PageTwo";
                     </div>
 
                     <div className="preview-actions">
+                        <button className="btn-secondary" onClick={handleChangeTemplate}>
+                            <i className="fa-solid fa-wand-magic-sparkles"></i>
+                            Change Template (Design {templateId})
+                        </button>
+
                         <button className="btn-secondary" onClick={() => navigate(`/editor?cvId=${cvId}`)}>
                             <i className="fa-solid fa-pen"></i>
                             Edit
@@ -61,13 +87,13 @@ import PageTwo from "../components/PageTwo";
                     </div>
                     {currentPage === 1 && (
                         <div className="preview-page">
-                            <PageOne cvData={cvData} />
+                            <PageOne cvData={cvData} templateId={templateId}/>
                         </div>
                     )}
 
                     {currentPage === 2 && (
                         <div className="preview-page">
-                            <PageTwo cvData={cvData} />
+                            <PageTwo cvData={cvData} templateId={templateId}/>
                         </div>
                     )}
                 </div>

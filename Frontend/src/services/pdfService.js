@@ -37,35 +37,8 @@ const fetchCvById = async (cvId) => {
   return response.json();
 };
 
-const addSection = (doc, heading, content, margin, pageWidth, pageHeight, lineHeight, sectionSpacing, currentY) => {
-  if (!content || content.length === 0) return currentY;
-  let y = currentY;
-  if (y > pageHeight - margin) {
-    doc.addPage();
-    y = margin;
-  }
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text(heading, margin, y);
-  y += lineHeight;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-
-  const lines = doc.splitTextToSize(content, pageWidth - margin * 2);
-  lines.forEach((line) => {
-    if (y > pageHeight - margin) {
-      doc.addPage();
-      y = margin;
-    }
-    doc.text(line, margin, y);
-    y += lineHeight;
-  });
-
-  return y + sectionSpacing;
-};
-
-export const exportCvAsPdf = async (cvId) => {
+// 1. Agregamos el parámetro templateId a la función exportadora
+export const exportCvAsPdf = async (cvId, templateId = 1) => {
   const data = await fetchCvById(cvId);
   const doc = new jsPDF({ unit: "pt", format: "letter" });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -81,6 +54,38 @@ export const exportCvAsPdf = async (cvId) => {
   const title = profile?.nombre_completo || cv.nombre_cv || `CV ${cv.id_cv}`;
   const subtitle = profile?.profesion || "";
 
+  // ===================================================
+  // 2. CONFIGURACIÓN DINÁMICA DE PALETAS DE COLOR (Mapeado a tus diseños)
+  // ===================================================
+  let config = {
+    pageBg: [255, 255, 255],       // Fondo de la hoja blanca por defecto
+    sidebarBg: [23, 28, 38],       // Gris oscuro original
+    sidebarText: [242, 238, 233],  // Blanco crema
+    goldColor: [166, 140, 96],     // Dorado original
+    titleColor: [166, 140, 96],    // Apellido dorado
+    contentTitle: [50, 55, 70],    // Títulos de secciones en gris oscuro
+    fontStyle: "helvetica"
+  };
+
+  if (Number(templateId) === 2) {
+    // DISEÑO 2: Minimalista Corporativo (Gris Claro y Azul Formal)
+    config.pageBg = [229, 231, 235];       // Gris claro
+    config.sidebarBg = [209, 213, 219];    // Gris un poco más marcado
+    config.sidebarText = [17, 24, 39];     // Letras oscuras en sidebar
+    config.goldColor = [31, 78, 121];      // Azul corporativo para títulos de sidebar
+    config.titleColor = [31, 78, 121];     // Apellido en Azul
+    config.contentTitle = [31, 78, 121];   // Títulos de sección en Azul
+  } else if (Number(templateId) === 3) {
+    // DISEÑO 3: Elegante Emocional (Crema y Café Orgánico)
+    config.pageBg = [250, 246, 240];       // Fondo crema cálido
+    config.sidebarBg = [62, 59, 51];       // Marrón oscuro elegante
+    config.sidebarText = [245, 245, 245];  // Blanco suave
+    config.goldColor = [212, 175, 55];     // Dorado brillante
+    config.titleColor = [101, 83, 47];     // Café/Dorado viejo
+    config.contentTitle = [101, 83, 47];   // Secciones en Café
+    config.fontStyle = "times";            // Forzamos fuente clásica con patines (Serif)
+  }
+
   const buildSidebarLines = async () => {
     const sidebarX = 0;
     const innerX = sidebarX + 14;
@@ -95,19 +100,21 @@ export const exportCvAsPdf = async (cvId) => {
       lines.push({ type: "spacer", height: 20 });
     }
 
-    lines.push({ type: "heading", text: "CONTACT", height: 14, color: [166, 140, 96] });
+    lines.push({ type: "heading", text: "CONTACT", height: 14, color: config.goldColor });
 
+    // Alternar color de iconos según fondo del sidebar
+    const iconTheme = Number(templateId) === 2 ? "000000" : "ffffff";
     const iconUrls = {
-      phone: "https://img.icons8.com/ios-filled/64/ffffff/phone.png",
-      email: "https://img.icons8.com/ios-filled/64/ffffff/new-post.png",
-      location: "https://img.icons8.com/ios-filled/64/ffffff/marker.png",
-      linkedin: "https://img.icons8.com/ios-filled/64/ffffff/linkedin.png",
-      github: "https://img.icons8.com/ios-filled/64/ffffff/github.png",
-      website: "https://img.icons8.com/ios-filled/64/ffffff/domain.png",
+      phone: `https://img.icons8.com/ios-filled/64/${iconTheme}/phone.png`,
+      email: `https://img.icons8.com/ios-filled/64/${iconTheme}/new-post.png`,
+      location: `https://img.icons8.com/ios-filled/64/${iconTheme}/marker.png`,
+      linkedin: `https://img.icons8.com/ios-filled/64/${iconTheme}/linkedin.png`,
+      github: `https://img.icons8.com/ios-filled/64/${iconTheme}/github.png`,
+      website: `https://img.icons8.com/ios-filled/64/${iconTheme}/domain.png`,
     };
 
     const wrapContactText = (text, width) => {
-      doc.setFont("helvetica", "normal");
+      doc.setFont(config.fontStyle, "normal");
       doc.setFontSize(8);
       const tokens = text.match(/[^./]+[./]?/g) || [text];
       const lines = [];
@@ -153,11 +160,6 @@ export const exportCvAsPdf = async (cvId) => {
     addContactField("website", profile?.portafolio);
 
     lines.push({ type: "separator", height: 30 });
-
-    const makeListLines = (items, maxItems) => {
-      const arr = (items || []).slice(0, maxItems || items.length).map((it) => String(it));
-      return arr;
-    };
 
     const educationLines = (education || [])
       .filter((item) => item.institucion || item.programa || item.periodo)
@@ -210,11 +212,13 @@ export const exportCvAsPdf = async (cvId) => {
   const drawSidebarPage = async (startIndex = 0) => {
     const sidebarX = 0;
     const innerX = sidebarX + 14;
-    const sidebarColor = [24, 28, 38];
-    const titleColor = [242, 238, 233];
-    const goldColor = [166, 140, 96];
 
-    doc.setFillColor(...sidebarColor);
+    // Pintar fondo general de la hoja blanca/crema/gris
+    doc.setFillColor(...config.pageBg);
+    doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+    // Pintar fondo del sidebar
+    doc.setFillColor(...config.sidebarBg);
     doc.rect(sidebarX, 0, sidebarWidth, pageHeight, "F");
 
     let y = 18;
@@ -228,6 +232,12 @@ export const exportCvAsPdf = async (cvId) => {
           const imageWidth = sidebarWidth;
           const imageHeight = imageWidth / aspectRatio;
           doc.addImage(imageData, "JPEG", sidebarX, 0, imageWidth, imageHeight);
+          
+          // Efecto blanco y negro si es la plantilla 2 minimalista
+          if (Number(templateId) === 2) {
+            // Nota: jsPDF básico no soporta filtros nativos directo en addImage, 
+            // pero el cambio visual de colores de interfaz ya cumple de forma excelente.
+          }
           y = imageHeight + 20;
         } catch (e) {
           console.error("Failed to load sidebar image", e);
@@ -239,9 +249,7 @@ export const exportCvAsPdf = async (cvId) => {
 
       if (el.type === "spacer") {
         const h = el.height || 10;
-        if (y + h > pageHeight - 12) {
-          return { nextIndex: i, finished: false };
-        }
+        if (y + h > pageHeight - 12) return { nextIndex: i, finished: false };
         y += h;
         startIndex = i + 1;
         continue;
@@ -250,9 +258,9 @@ export const exportCvAsPdf = async (cvId) => {
       if (el.type === "heading" || el.type === "sectionHeading") {
         const h = el.height || 14;
         if (y + h > pageHeight - 12) return { nextIndex: i, finished: false };
-        doc.setFont("helvetica", "bold");
+        doc.setFont(config.fontStyle, "bold");
         doc.setFontSize( el.type === "heading" ? 12 : 10 );
-        doc.setTextColor(...(el.color || goldColor));
+        doc.setTextColor(...(el.color || config.goldColor));
         doc.text(el.text, innerX, y);
         y += h;
         startIndex = i + 1;
@@ -262,7 +270,9 @@ export const exportCvAsPdf = async (cvId) => {
       if (el.type === "separator") {
         const h = el.height || 30;
         if (y + 6 + h > pageHeight - 12) return { nextIndex: i, finished: false };
-        doc.setDrawColor(160, 166, 175);
+        // Separador más tenue para el diseño minimalista gris
+        if (Number(templateId) === 2) doc.setDrawColor(156, 163, 175);
+        else doc.setDrawColor(160, 166, 175);
         doc.setLineWidth(0.6);
         doc.line(innerX, y + 6, innerX + sidebarWidth - 36, y + 6);
         y += h;
@@ -283,20 +293,22 @@ export const exportCvAsPdf = async (cvId) => {
                 const iconData = await getImageBase64(el.icon);
                 doc.addImage(iconData, "PNG", innerX, y, iconSize, iconSize);
               } else {
+                doc.setFillColor(...config.sidebarText);
                 doc.circle(innerX + iconSize / 2, y + iconSize / 2, iconSize / 4, "F");
               }
             } catch (err) {
+              doc.setFillColor(...config.sidebarText);
               doc.circle(innerX + iconSize / 2, y + iconSize / 2, iconSize / 4, "F");
             }
-            doc.setFont("helvetica", "normal");
+            doc.setFont(config.fontStyle, "normal");
             doc.setFontSize(8);
-            doc.setTextColor(...titleColor);
+            doc.setTextColor(...config.sidebarText);
             doc.text(el.wrapped[wi], textX, y + 8);
             y += 8 + 10;
           } else {
-            doc.setFont("helvetica", "normal");
+            doc.setFont(config.fontStyle, "normal");
             doc.setFontSize(8);
-            doc.setTextColor(...titleColor);
+            doc.setTextColor(...config.sidebarText);
             doc.text(el.wrapped[wi], textX, y + 8);
             y += 10;
           }
@@ -310,9 +322,9 @@ export const exportCvAsPdf = async (cvId) => {
         const isBullet = el.type === "bullet";
         const h = 10;
         if (y + h > pageHeight - 12) return { nextIndex: i, finished: false };
-        doc.setFont("helvetica", "normal");
+        doc.setFont(config.fontStyle, "normal");
         doc.setFontSize(9);
-        doc.setTextColor(...titleColor);
+        doc.setTextColor(...config.sidebarText);
         if (isBullet) doc.text(`• ${el.text}`, innerX, y);
         else doc.text(el.text, innerX + 10, y);
         y += 10;
@@ -334,9 +346,9 @@ export const exportCvAsPdf = async (cvId) => {
     let y = margin;
     const sectionTitle = "PROJECTS";
     const renderHeader = () => {
-      doc.setFont("helvetica", "bold");
+      doc.setFont(config.fontStyle, "bold");
       doc.setFontSize(12);
-      doc.setTextColor(50, 55, 70);
+      doc.setTextColor(...config.contentTitle);
       doc.text(sectionTitle, contentX, y);
       doc.setDrawColor(210, 210, 210);
       doc.setLineWidth(0.5);
@@ -358,7 +370,7 @@ export const exportCvAsPdf = async (cvId) => {
       const description = project.descripcion || "";
       const links = [project.repositorio ? `Repo: ${project.repositorio}` : null, project.deploy ? `Live: ${project.deploy}` : null].filter(Boolean);
 
-      doc.setFont("helvetica", "bold");
+      doc.setFont(config.fontStyle, "bold");
       doc.setFontSize(11);
       doc.setTextColor(80, 85, 95);
       const projectTitle = `${title}${subtitle}`;
@@ -393,12 +405,10 @@ export const exportCvAsPdf = async (cvId) => {
         }
       }
 
-      if (description || links.length) {
-        y += 10;
-      }
+      if (description || links.length)  y += 10;
 
       if (description) {
-        doc.setFont("helvetica", "normal");
+        doc.setFont(config.fontStyle, "normal");
         doc.setFontSize(10);
         doc.setTextColor(100, 105, 115);
         const descLines = doc.splitTextToSize(description, contentWidth);
@@ -411,13 +421,11 @@ export const exportCvAsPdf = async (cvId) => {
           doc.text(line, contentX, y);
           y += 12;
         }
-        if (links.length) {
-          y += 10;
-        }
+        if (links.length) y += 10;
       }
 
       if (links.length) {
-        doc.setFont("helvetica", "normal");
+        doc.setFont(config.fontStyle, "normal");
         doc.setFontSize(10);
         doc.setTextColor(120, 125, 135);
         for (const link of links) {
@@ -443,15 +451,15 @@ export const exportCvAsPdf = async (cvId) => {
   const drawSection = async (heading, text, topY) => {
     if (!text) return topY;
     const headingY = topY;
-    doc.setFont("helvetica", "bold");
+    doc.setFont(config.fontStyle, "bold");
     doc.setFontSize(12);
-    doc.setTextColor(50, 55, 70);
+    doc.setTextColor(...config.contentTitle);
     doc.text(heading.toUpperCase(), contentX, headingY);
     doc.setDrawColor(210, 210, 210);
     doc.setLineWidth(0.5);
     doc.line(contentX, headingY + 4, contentX + contentWidth, headingY + 4);
     const bodyY = headingY + 22;
-    doc.setFont("helvetica", "normal");
+    doc.setFont(config.fontStyle, "normal");
     doc.setFontSize(10);
     doc.setTextColor(80, 85, 95);
     const wrapped = doc.splitTextToSize(text, contentWidth);
@@ -472,9 +480,9 @@ export const exportCvAsPdf = async (cvId) => {
     let y = topY;
 
     if (education && education.length) {
-      doc.setFont("helvetica", "bold");
+      doc.setFont(config.fontStyle, "bold");
       doc.setFontSize(12);
-      doc.setTextColor(50, 55, 70);
+      doc.setTextColor(...config.contentTitle);
       doc.text("EDUCATION", contentX, y);
       doc.setDrawColor(210, 210, 210);
       doc.setLineWidth(0.5);
@@ -483,7 +491,7 @@ export const exportCvAsPdf = async (cvId) => {
 
       for (const item of education) {
         if (y > pageHeight - margin) { await addPageWithSidebar(); y = margin; }
-        doc.setFont("helvetica", "bold");
+        doc.setFont(config.fontStyle, "bold");
         doc.setFontSize(10);
         doc.setTextColor(80, 85, 95);
         const title = item.institucion || "Education";
@@ -499,7 +507,7 @@ export const exportCvAsPdf = async (cvId) => {
 
         const details = [item.descripcion, item.evidencia].filter(Boolean).join("\n");
         if (details) {
-          doc.setFont("helvetica", "normal");
+          doc.setFont(config.fontStyle, "normal");
           doc.setFontSize(10);
           doc.setTextColor(80, 85, 95);
           const wrap = doc.splitTextToSize(details, contentWidth);
@@ -515,9 +523,9 @@ export const exportCvAsPdf = async (cvId) => {
     }
 
     if (skills && skills.length) {
-      doc.setFont("helvetica", "bold");
+      doc.setFont(config.fontStyle, "bold");
       doc.setFontSize(12);
-      doc.setTextColor(50, 55, 70);
+      doc.setTextColor(...config.contentTitle);
       doc.text("SKILLS", contentX, y);
       doc.setDrawColor(210, 210, 210);
       doc.setLineWidth(0.5);
@@ -526,7 +534,7 @@ export const exportCvAsPdf = async (cvId) => {
 
       for (const skill of skills) {
         if (y > pageHeight - margin) { await addPageWithSidebar(); y = margin; }
-        doc.setFont("helvetica", "bold");
+        doc.setFont(config.fontStyle, "bold");
         doc.setFontSize(10);
         doc.setTextColor(80, 85, 95);
         const baseName = skill.nombre || skill.categoria || "Skill";
@@ -541,7 +549,7 @@ export const exportCvAsPdf = async (cvId) => {
 
         const details = [skill.descripcion, skill.evidencia].filter(Boolean).join("\n");
         if (details) {
-          doc.setFont("helvetica", "normal");
+          doc.setFont(config.fontStyle, "normal");
           doc.setFontSize(10);
           doc.setTextColor(80, 85, 95);
           const wrap = doc.splitTextToSize(details, contentWidth);
@@ -557,9 +565,9 @@ export const exportCvAsPdf = async (cvId) => {
     }
 
     if (languages && languages.length) {
-      doc.setFont("helvetica", "bold");
+      doc.setFont(config.fontStyle, "bold");
       doc.setFontSize(12);
-      doc.setTextColor(50, 55, 70);
+      doc.setTextColor(...config.contentTitle);
       doc.text("LANGUAGES", contentX, y);
       doc.setDrawColor(210, 210, 210);
       doc.setLineWidth(0.5);
@@ -568,7 +576,7 @@ export const exportCvAsPdf = async (cvId) => {
 
       for (const language of languages) {
         if (y > pageHeight - margin) { await addPageWithSidebar(); y = margin; }
-        doc.setFont("helvetica", "bold");
+        doc.setFont(config.fontStyle, "bold");
         doc.setFontSize(10);
         doc.setTextColor(80, 85, 95);
         const title = `${language.idioma || "Language"}${language.nivel ? ` — ${language.nivel}` : ""}`;
@@ -581,7 +589,7 @@ export const exportCvAsPdf = async (cvId) => {
 
         const details = language.descripcion || "";
         if (details) {
-          doc.setFont("helvetica", "normal");
+          doc.setFont(config.fontStyle, "normal");
           doc.setFontSize(10);
           doc.setTextColor(80, 85, 95);
           const wrap = doc.splitTextToSize(details, contentWidth);
@@ -610,19 +618,19 @@ export const exportCvAsPdf = async (cvId) => {
   const surname = nameParts.length > 1 ? nameParts.pop() : "";
   const firstNames = nameParts.join(" ") || surname;
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont(config.fontStyle, "normal");
   doc.setFontSize(12);
   doc.setTextColor(100, 105, 115);
   doc.text(firstNames.toUpperCase(), contentX, headingY);
 
-  doc.setFont("helvetica", "bold");
+  doc.setFont(config.fontStyle, "bold");
   doc.setFontSize(32);
-  doc.setTextColor(166, 140, 96);
+  doc.setTextColor(...config.titleColor);
   const surnameY = headingY + 28;
   doc.text(surname.toUpperCase() || firstNames.toUpperCase(), contentX, surnameY);
 
   if (subtitle) {
-    doc.setFont("helvetica", "normal");
+    doc.setFont(config.fontStyle, "normal");
     doc.setFontSize(11);
     doc.setTextColor(120, 125, 135);
     doc.text(subtitle.toUpperCase(), contentX, surnameY + 18);
@@ -642,7 +650,7 @@ export const exportCvAsPdf = async (cvId) => {
   }
 
   if (!summaryText && (!education || education.length === 0) && (!projects || projects.length === 0)) {
-    doc.setFont("helvetica", "normal");
+    doc.setFont(config.fontStyle, "normal");
     doc.setFontSize(10);
     doc.text("No additional content available.", contentX, currentY);
   }
