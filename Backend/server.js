@@ -37,7 +37,7 @@ if (fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
 }
 
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
     if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/uploads")) {
         return res.status(404).json({ message: "Not found" });
     }
