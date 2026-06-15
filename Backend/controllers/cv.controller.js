@@ -53,14 +53,28 @@ const getCvById = async (req, res) => {
         const { id } = req.params;
 
         const data = await CvModel.getCvById(id);
-        if (!data) return res.status(404).json({ message: "CV not found" });
 
-        const profile = await ProfileModel.getProfileByUser(data.cv.id_usuario);
+        if (!data) {
+            return res.status(404).json({
+                message: "CV not found"
+            });
+        }
 
-        res.status(200).json({ ...data, profile });
+        const profile = await ProfileModel.getProfileByCv(
+            data.cv.id_cv
+        );
+
+        res.status(200).json({
+            ...data,
+            profile
+        });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error fetching CV" });
+
+        res.status(500).json({
+            message: "Error fetching CV"
+        });
     }
 };
 

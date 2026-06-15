@@ -324,10 +324,7 @@ function Editor() {
         data.append("foto_perfil", foto);
       }
 
-      const profileResult = await createProfile(data);
-      const id_perfil = profileResult.insertId;
       let id_cv = isEditing && editingCvId ? editingCvId : null;
-
       const newName = formData.nombre_completo
         ? `${formData.nombre_completo} CV`
         : `${user.nombre} CV`;
@@ -344,6 +341,10 @@ function Editor() {
         const cvResult = await createCv(cvPayload);
         id_cv = cvResult.insertId;
       }
+      data.append("id_cv", id_cv);
+
+      const profileResult = await createProfile(data);
+      const id_perfil = profileResult.insertId;
 
       if (isEditing) {
         try {

@@ -9,9 +9,19 @@ const getProfileByUser = async (id_usuario) => {
     return rows[0] || null;
 };
 
+const getProfileByCv = async (id_cv) => {
+    const [rows] = await pool.query(
+        `SELECT * FROM perfiles WHERE id_cv = ? LIMIT 1`,
+        [id_cv]
+    );
+
+    return rows[0] || null;
+};
+
 const createProfile = async (profileData) => {
     const {
         id_usuario,
+        id_cv,
         nombre_completo,
         profesion,
         ciudad,
@@ -27,6 +37,7 @@ const createProfile = async (profileData) => {
     const [result] = await pool.query(
         `INSERT INTO perfiles (
             id_usuario,
+            id_cv,
             nombre_completo,
             profesion,
             ciudad,
@@ -38,9 +49,10 @@ const createProfile = async (profileData) => {
             portafolio,
             foto_perfil
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             id_usuario,
+            id_cv,
             nombre_completo,
             profesion,
             ciudad,
@@ -118,6 +130,7 @@ const getProfileStats = async (userId) => {
 
 module.exports = {
     getProfileByUser,
+    getProfileByCv,
     createProfile,
     updateProfile,
     getProfileStats

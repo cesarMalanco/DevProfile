@@ -2,13 +2,23 @@ const ProfileModel = require("../models/profile.model");
 
 const createProfile = async (req, res) => {
     try {
-        const userId = req.body.id_usuario;
-        const existingProfile = await ProfileModel.getProfileByUser(userId);
+        const cvId = req.body.id_cv;
+        const existingProfile =await ProfileModel.getProfileByCv(cvId);
         const photoPath = req.file ? req.file.filename : existingProfile?.foto_perfil || null;
-        const profileData = { ...req.body, foto_perfil: photoPath };
+        const profileData = {...req.body, foto_perfil: photoPath};
+
+        if (!cvId) {
+            return res.status(400).json({
+                message: "CV ID is required"
+            });
+        }
 
         if (existingProfile) {
-            await ProfileModel.updateProfile(existingProfile.id_perfil, profileData);
+            await ProfileModel.updateProfile(
+                existingProfile.id_perfil,
+                profileData
+            );
+
             return res.status(200).json({
                 message: "Profile updated successfully",
                 insertId: existingProfile.id_perfil
@@ -16,6 +26,7 @@ const createProfile = async (req, res) => {
         }
 
         const result = await ProfileModel.createProfile(profileData);
+
         res.status(201).json({
             message: "Profile saved successfully",
             insertId: result.insertId
