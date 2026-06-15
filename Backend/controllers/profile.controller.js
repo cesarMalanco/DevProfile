@@ -4,8 +4,8 @@ const createProfile = async (req, res) => {
     try {
         const cvId = req.body.id_cv;
         const existingProfile =await ProfileModel.getProfileByCv(cvId);
-        const photoPath = req.file ? req.file.filename : existingProfile?.foto_perfil || null;
-        const profileData = {...req.body, foto_perfil: photoPath};
+        const fotoBase64 = req.body.foto_perfil || existingProfile?.foto_perfil || null;
+        const profileData = {...req.body, foto_perfil: fotoBase64};
 
         if (!cvId) {
             return res.status(400).json({

@@ -307,23 +307,6 @@ function Editor() {
         return;
       }
 
-      const data = new FormData();
-
-      data.append("id_usuario", user.id_usuario);
-      data.append("nombre_completo", formData.nombre_completo);
-      data.append("profesion", formData.profesion);
-      data.append("ciudad", formData.ciudad);
-      data.append("correo", formData.correo);
-      data.append("telefono", formData.telefono);
-      data.append("descripcion", formData.descripcion);
-      data.append("github", formData.github);
-      data.append("linkedin", formData.linkedin);
-      data.append("portafolio", formData.portafolio);
-
-      if (foto) {
-        data.append("foto_perfil", foto);
-      }
-
       let id_cv = isEditing && editingCvId ? editingCvId : null;
       const newName = formData.nombre_completo
         ? `${formData.nombre_completo} CV`
@@ -341,7 +324,21 @@ function Editor() {
         const cvResult = await createCv(cvPayload);
         id_cv = cvResult.insertId;
       }
-      data.append("id_cv", id_cv);
+
+      const data = {
+        id_usuario: user.id_usuario,
+        id_cv: id_cv,
+        nombre_completo: formData.nombre_completo,
+        profesion: formData.profesion,
+        ciudad: formData.ciudad,
+        correo: formData.correo,
+        telefono: formData.telefono,
+        descripcion: formData.descripcion,
+        github: formData.github,
+        linkedin: formData.linkedin,
+        portafolio: formData.portafolio,
+        foto_perfil: foto || null
+      };
 
       const profileResult = await createProfile(data);
       const id_perfil = profileResult.insertId;
