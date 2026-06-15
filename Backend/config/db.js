@@ -7,6 +7,8 @@ const pool = mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306,
+
     waitForConnections: true,
     connectionLimit: 40,
     queueLimit: 0,
@@ -17,6 +19,10 @@ const pool = mysql.createPool({
 
     // Timeout de conexión
     connectTimeout: 10000, // 10 segundos
+
+    ssl: {
+        rejectUnauthorized: false 
+    },
 
     // Timezone
     timezone: "local",
