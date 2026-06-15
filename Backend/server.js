@@ -19,10 +19,10 @@ app.use(express.json());
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(cors({
-    origin: "*",
-    credentials: false,
+    origin: process.env.FRONTEND_URL || "https://devprofile-react.netlify.app", 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true 
 }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
