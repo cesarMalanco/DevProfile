@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/api/education";
+import { API_BASE_URL } from "../utils/apiConfig.js";
+
+const API_URL = `${API_BASE_URL}/education`;
 
 export const createEducation = async (data) => {
     const response = await fetch(API_URL, {

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { UPLOADS_URL } from "../../utils/apiConfig.js";
 import "../../styles/EditorStyles.css";
 import "../../styles/globalStyles.css";
 
 const useImagePreview = (image) => {
   const [preview, setPreview] = useState(null);
-  const backendUrl = "http://localhost:3000";
 
   useEffect(() => {
     if (!image) {
@@ -16,7 +16,7 @@ const useImagePreview = (image) => {
       const fullUrl =
         image.startsWith("http") || image.startsWith("/")
           ? image
-          : `${backendUrl}/uploads/${image}`;
+          : UPLOADS_URL(image);
       setPreview(fullUrl);
       return;
     }

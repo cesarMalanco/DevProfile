@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/api/projects";
+import { API_BASE_URL } from "../utils/apiConfig.js";
+
+const API_URL = `${API_BASE_URL}/projects`;
 
 export const createProject = async (data) => {
     const response = await fetch(API_URL, {

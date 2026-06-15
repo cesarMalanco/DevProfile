@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/api/languages";
+import { API_BASE_URL } from "../utils/apiConfig.js";
+
+const API_URL = `${API_BASE_URL}/languages`;
 
 export const createLanguage = async (data) => {
     const response = await fetch(API_URL, {

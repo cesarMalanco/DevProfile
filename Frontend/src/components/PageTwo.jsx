@@ -1,4 +1,5 @@
 import "../styles/PagesPreview.css";
+import { UPLOADS_URL } from "../utils/apiConfig.js";
 
 function PageTwo({ cvData, templateId }) {
     return (
@@ -22,7 +23,7 @@ function PageTwo({ cvData, templateId }) {
                             {project.imagen && (
                                 <img
                                     className="project-image"
-                                    src={`http://localhost:3000/uploads/${project.imagen}`}
+                                    src={UPLOADS_URL(project.imagen)}
                                     alt={project.nombre}
                                 />
                             )}

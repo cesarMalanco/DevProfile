@@ -1,4 +1,5 @@
 import "../styles/PagesPreview.css";
+import { UPLOADS_URL } from "../utils/apiConfig.js";
 
 function PageOne({ cvData, templateId }) {
     const fullName = cvData?.profile?.nombre_completo || "";
@@ -13,7 +14,7 @@ function PageOne({ cvData, templateId }) {
                 {cvData.profile?.foto_perfil && (
                     <img
                         className="sidebar-photo"
-                        src={`http://localhost:3000/uploads/${cvData.profile.foto_perfil}`}
+                        src={UPLOADS_URL(cvData.profile.foto_perfil)}
                         alt="Profile"
                     />
                 )}

@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
+import { API_BASE_URL, UPLOADS_URL } from "../utils/apiConfig.js";
 
-const BACKEND_URL = "http://localhost:3000";
-const CV_API_URL = `${BACKEND_URL}/api/cvs`;
+const CV_API_URL = `${API_BASE_URL}/cvs`;
 
 const getImageBase64 = async (url) => {
   const response = await fetch(url);
@@ -93,7 +93,7 @@ export const exportCvAsPdf = async (cvId, templateId = 1) => {
     const lines = [];
 
     if (profile?.foto_perfil) {
-      const imageUrl = `${BACKEND_URL}/uploads/${profile.foto_perfil}`;
+      const imageUrl = UPLOADS_URL(profile.foto_perfil);
       lines.push({ type: "image", src: imageUrl, height: 170 });
       lines.push({ type: "spacer", height: 20 });
     } else {
@@ -387,7 +387,7 @@ export const exportCvAsPdf = async (cvId, templateId = 1) => {
 
       if (project.imagen) {
         try {
-          const imageUrl = `${BACKEND_URL}/uploads/${project.imagen}`;
+          const imageUrl = UPLOADS_URL(project.imagen);
           const imageData = await getImageBase64(imageUrl);
           const imageWidth = Math.min(contentWidth, 220);
           const imageHeight = 120;
