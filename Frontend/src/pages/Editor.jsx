@@ -338,7 +338,6 @@ function Editor() {
         id_cv = cvResult.insertId;
       }
 
-      // Convertir foto a base64 si es un File
       const fotoBase64 = await fileToBase64(foto);
 
       const data = {
