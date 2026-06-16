@@ -218,6 +218,17 @@ function Editor() {
         resolve(null);
         return;
       }
+
+      if (typeof file === "string") {
+        resolve(file);
+        return;
+      }
+
+      if (!(file instanceof Blob)) {
+        reject(new TypeError("fileToBase64 expected a Blob/File or base64 string"));
+        return;
+      }
+
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
