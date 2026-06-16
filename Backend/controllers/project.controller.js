@@ -20,8 +20,6 @@ const createProject = async (req, res) => {
     }
 };
 
-module.exports = { createProject };
-
 const updateProject = async (req, res) => {
     try {
         const id = req.params.id;
