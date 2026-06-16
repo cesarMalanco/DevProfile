@@ -23,7 +23,13 @@ function PageTwo({ cvData, templateId }) {
                             {project.imagen && (
                                 <img
                                     className="project-image"
-                                    src={UPLOADS_URL(project.imagen)}
+                                    src={
+                                      project.imagen.startsWith("data:") ||
+                                      project.imagen.startsWith("http") ||
+                                      project.imagen.startsWith("/")
+                                        ? project.imagen
+                                        : UPLOADS_URL(project.imagen)
+                                    }
                                     alt={project.nombre}
                                 />
                             )}

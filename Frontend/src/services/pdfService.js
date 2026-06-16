@@ -387,8 +387,13 @@ export const exportCvAsPdf = async (cvId, templateId = 1) => {
 
       if (project.imagen) {
         try {
-          const imageUrl = UPLOADS_URL(project.imagen);
-          const imageData = await getImageBase64(imageUrl);
+          const imageData = project.imagen.startsWith("data:")
+            ? project.imagen
+            : await getImageBase64(
+                project.imagen.startsWith("http") || project.imagen.startsWith("/")
+                  ? project.imagen
+                  : UPLOADS_URL(project.imagen)
+              );
           const imageWidth = Math.min(contentWidth, 220);
           const imageHeight = 120;
           const imageX = contentX + (contentWidth - imageWidth) / 2;

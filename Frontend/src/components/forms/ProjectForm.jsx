@@ -14,11 +14,15 @@ const useImagePreview = (image) => {
     }
 
     if (typeof image === "string") {
-      const fullUrl =
-        image.startsWith("http") || image.startsWith("/")
-          ? image
-          : UPLOADS_URL(image);
-      setPreview(fullUrl);
+      if (
+        image.startsWith("http") ||
+        image.startsWith("/") ||
+        image.startsWith("data:")
+      ) {
+        setPreview(image);
+      } else {
+        setPreview(UPLOADS_URL(image));
+      }
       return;
     }
 
@@ -69,7 +73,10 @@ function ProjectForm({ projectData, setProjectData, projectsList = [], onAdd, on
 
   const getImageLabel = (image) => {
     if (!image) return "JPG, PNG • Max 5MB";
-    return typeof image === "string" ? image : image.name;
+    if (typeof image === "string") {
+      return image.startsWith("data:") ? "Selected image" : image;
+    }
+    return image.name;
   };
 
   return (

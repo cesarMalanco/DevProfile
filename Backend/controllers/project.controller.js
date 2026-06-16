@@ -1,8 +1,15 @@
 const ProjectModel = require("../models/project.model");
 
+const getImageValue = (req) => {
+    if (req.file) return req.file.filename;
+    if (req.body.imagen) return req.body.imagen;
+    if (req.body.Foto_proyecto) return req.body.Foto_proyecto;
+    return null;
+};
+
 const createProject = async (req, res) => {
     try {
-        const imagePath = req.file ? req.file.filename : null;
+        const imagePath = getImageValue(req);
         const projectData = { ...req.body, imagen: imagePath };
 
         const result = await ProjectModel.createProject(projectData);
@@ -23,7 +30,7 @@ const createProject = async (req, res) => {
 const updateProject = async (req, res) => {
     try {
         const id = req.params.id;
-        const imagePath = req.file ? req.file.filename : req.body.imagen || null;
+        const imagePath = getImageValue(req);
         const projectData = { ...req.body, imagen: imagePath };
 
         await ProjectModel.updateProject(id, projectData);
