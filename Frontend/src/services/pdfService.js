@@ -18,6 +18,29 @@ const getImageBase64 = async (url) => {
   });
 };
 
+const resolveImageToDataUrl = async (src) => {
+  if (!src) return null;
+  if (typeof src !== "string") {
+    throw new Error("Image source must be a string for PDF export");
+  }
+  if (src.startsWith("data:")) return src;
+  if (src.startsWith("http") || src.startsWith("/")) return await getImageBase64(src);
+  return await getImageBase64(UPLOADS_URL(src));
+};
+
+const getImageTypeFromDataUrl = (dataUrl, fallbackSrc = "") => {
+  if (typeof dataUrl !== "string") return "JPEG";
+  const match = dataUrl.match(/^data:image\/(png|jpeg|jpg|webp);base64,/i);
+  if (match) {
+    const mime = match[1].toLowerCase();
+    if (mime === "png" || mime === "webp") return "PNG";
+    return "JPEG";
+  }
+  const ext = (fallbackSrc || "").split(".").pop().toLowerCase();
+  if (ext === "png" || ext === "webp") return "PNG";
+  return "JPEG";
+};
+
 const getImageDimensions = async (url) => {
   return await new Promise((resolve, reject) => {
     const image = new Image();
@@ -93,8 +116,11 @@ export const exportCvAsPdf = async (cvId, templateId = 1) => {
     const lines = [];
 
     if (profile?.foto_perfil) {
-      const imageUrl = UPLOADS_URL(profile.foto_perfil);
-      lines.push({ type: "image", src: imageUrl, height: 170 });
+      const imageSrc = typeof profile.foto_perfil === "string" &&
+        (profile.foto_perfil.startsWith("data:") || profile.foto_perfil.startsWith("http") || profile.foto_perfil.startsWith("/"))
+        ? profile.foto_perfil
+        : UPLOADS_URL(profile.foto_perfil);
+      lines.push({ type: "image", src: imageSrc, height: 170 });
       lines.push({ type: "spacer", height: 20 });
     } else {
       lines.push({ type: "spacer", height: 20 });
@@ -387,24 +413,21 @@ export const exportCvAsPdf = async (cvId, templateId = 1) => {
 
       if (project.imagen) {
         try {
-          const imageData = project.imagen.startsWith("data:")
-            ? project.imagen
-            : await getImageBase64(
-                project.imagen.startsWith("http") || project.imagen.startsWith("/")
-                  ? project.imagen
-                  : UPLOADS_URL(project.imagen)
-              );
-          const imageWidth = Math.min(contentWidth, 220);
-          const imageHeight = 120;
-          const imageX = contentX + (contentWidth - imageWidth) / 2;
-          y += 10;
-          if (y + imageHeight > pageHeight - margin) {
-            await addPageWithSidebar();
-            y = margin;
-            renderHeader();
+          const imageData = await resolveImageToDataUrl(project.imagen);
+          if (imageData) {
+            const imageType = getImageTypeFromDataUrl(imageData, project.imagen);
+            const imageWidth = Math.min(contentWidth, 220);
+            const imageHeight = 120;
+            const imageX = contentX + (contentWidth - imageWidth) / 2;
+            y += 10;
+            if (y + imageHeight > pageHeight - margin) {
+              await addPageWithSidebar();
+              y = margin;
+              renderHeader();
+            }
+            doc.addImage(imageData, imageType, imageX, y, imageWidth, imageHeight);
+            y += imageHeight + 18;
           }
-          doc.addImage(imageData, "JPEG", imageX, y, imageWidth, imageHeight);
-          y += imageHeight + 18;
         } catch (error) {
           console.error("Failed to load project image", error);
         }
