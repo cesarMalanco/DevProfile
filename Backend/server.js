@@ -14,6 +14,10 @@ const projectRoutes = require("./routes/project.routes");
 const educationRoutes = require("./routes/education.routes");
 const languageRoutes = require("./routes/language.routes");
 
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // === MIDDLEWARES ===
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://devprofile-react.netlify.app";

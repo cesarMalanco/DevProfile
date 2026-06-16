@@ -384,19 +384,19 @@ function Editor() {
 
           for (const project of projectsList.filter((p) => p._saved)) {
             if (project.id_proyecto) {
-              const projectForm = new FormData();
-              projectForm.append("nombre", project.nombre);
-              projectForm.append("descripcion", project.descripcion);
-              projectForm.append("tecnologias", project.tecnologias);
-              projectForm.append("repositorio", project.repositorio);
-              projectForm.append("deploy", project.deploy);
-              if (project.imagen instanceof File) {
-                projectForm.append("Foto_proyecto", project.imagen);
-              } else if (project.imagen) {
-                projectForm.append("imagen", project.imagen);
-              }
+              const projectImage =
+                project.imagen instanceof File
+                  ? await fileToBase64(project.imagen)
+                  : project.imagen || null;
 
-              await updateProject(project.id_proyecto, projectForm);
+              await updateProject(project.id_proyecto, {
+                nombre: project.nombre,
+                descripcion: project.descripcion,
+                tecnologias: project.tecnologias,
+                repositorio: project.repositorio,
+                deploy: project.deploy,
+                imagen: projectImage
+              });
             }
           }
 
@@ -446,21 +446,22 @@ function Editor() {
       ].filter(hasFormValues);
 
       for (const project of projectsToSave) {
-        const projectForm = new FormData();
-        projectForm.append("id_usuario", user.id_usuario);
-        projectForm.append("id_perfil", id_perfil);
-        projectForm.append("id_cv", id_cv);
-        projectForm.append("nombre", project.nombre);
-        projectForm.append("descripcion", project.descripcion);
-        projectForm.append("tecnologias", project.tecnologias);
-        projectForm.append("repositorio", project.repositorio);
-        projectForm.append("deploy", project.deploy);
+        const projectImage =
+          project.imagen instanceof File
+            ? await fileToBase64(project.imagen)
+            : project.imagen || null;
 
-        if (project.imagen) {
-          projectForm.append("Foto_proyecto", project.imagen);
-        }
-
-        await createProject(projectForm);
+        await createProject({
+          id_usuario: user.id_usuario,
+          id_perfil,
+          id_cv,
+          nombre: project.nombre,
+          descripcion: project.descripcion,
+          tecnologias: project.tecnologias,
+          repositorio: project.repositorio,
+          deploy: project.deploy,
+          imagen: projectImage
+        });
       }
 
       const educationToSave = [

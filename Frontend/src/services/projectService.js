@@ -5,7 +5,10 @@ const API_URL = `${API_BASE_URL}/projects`;
 export const createProject = async (data) => {
     const response = await fetch(API_URL, {
         method: "POST",
-        body: data 
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
     });
     if (!response.ok) {
         const text = await response.text();
@@ -18,7 +21,10 @@ export const createProject = async (data) => {
 export const updateProject = async (id, data) => {
     const response = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
-        body: data
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
     });
 
     if (!response.ok) {
