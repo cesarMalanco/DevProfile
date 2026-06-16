@@ -239,7 +239,6 @@ function Editor() {
   const handleSubmit = async () => {
     try{
       const validationErrors = validatePersonalForm();
-      console.log("SKILLS LIST:", skillsList);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
 
@@ -422,7 +421,6 @@ function Editor() {
             }
           }
         } catch (err) {
-          console.error("Error updating saved items:", err);
         }
       }
 
@@ -512,8 +510,6 @@ function Editor() {
 
       navigate(`/preview?cvId=${id_cv}`);
     }catch(error){
-      console.error("Error saving:", error);
-
       await showAlert(darkMode, {
         icon: "error",
         title: "Error",
@@ -629,7 +625,6 @@ function Editor() {
         }
 
       } catch (error) {
-        console.error("Error loading CV:", error);
       }
     };
 
